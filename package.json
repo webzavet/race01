@@ -1,0 +1,10 @@
+{
+  "devDependencies": {
+    "@openapitools/openapi-generator-cli": "^2.20.0"
+  },
+  "scripts": {
+    "bundle:spec": "swagger-cli bundle docs/api.yaml -o docs/api-bundled.yaml --type yaml",
+    "gen:resources": "npm run bundle:spec && rm -rf resources/* && openapi-generator-cli generate -i docs/api-bundled.yaml -g javascript -o resources --skip-validate-spec --additional-properties=usePromises=true",
+    "gen:all": "npm run gen:resources"
+  }
+}

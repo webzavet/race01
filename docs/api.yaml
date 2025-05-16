@@ -1,0 +1,21 @@
+openapi: 3.0.1
+
+info:
+  title: Race01
+  description: Race01
+  version: 0.0.1
+
+paths:
+  /test:
+    post:
+      tags:
+        - Test
+      description: Test
+      responses:
+        '201':
+          description: successfully
+
+components:
+  schemas:
+    Token:
+      $ref: './spec/components/schemas/Token.yaml'
