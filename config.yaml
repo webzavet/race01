@@ -1,0 +1,25 @@
+server:
+  port: ":8003"
+  logging:
+    level: "debug"
+    format: "text"
+
+jwt:
+  token:
+    secret_key: "supersecretkey"
+
+database:
+  sql:
+    url: "postgresql://postgres:postgres@localhost:7001/postgres?sslmode=disable"
+
+oauth:
+  google:
+    client_id: "1488888888888-abcde1234567890.apps.googleusercontent.com"
+    client_secret: "secret-1234567890"
+    redirect_url: "https://nure.ua/"
+
+aws:
+  region: "eu-central-1"
+  access_key_id: "your_access_key_id"
+  secret_access_key: "your_secret_access_key"
+  bucket_name: "your_bucket_name"
