@@ -44,4 +44,4 @@ migrate-down:
 	@node index.js migrate down
 
 run-service:
-	@node index.js run service
+	@node index.js service run

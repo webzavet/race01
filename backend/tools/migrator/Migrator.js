@@ -1,6 +1,6 @@
 import fs from 'fs';
 import path from 'path';
-import { db } from '../../data/sql.js';
+import { db } from '../../data/db.js';
 
 const MIGRATIONS_DIR = path.resolve(process.cwd(), 'backend', 'data', 'migration');
 

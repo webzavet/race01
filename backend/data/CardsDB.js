@@ -1,13 +1,13 @@
-import { db } from './sql.js';
+import { db } from './db.js';
 
-export default class CardsSQL {
+export default class CardsDB {
     constructor(builder = null, counter = null) {
         this.builder = builder || db('cards');
         this.counter = counter || db('cards').count({ count: '*' });
     }
 
     static New() {
-        return new CardsSQL();
+        return new CardsDB();
     }
 
     async insert({
@@ -87,7 +87,7 @@ export default class CardsSQL {
     // Транзакция: fn получает новый repo, внутри которого все запросы в рамках одного trx
     async transaction(fn) {
         return db.transaction(async trx => {
-            const repo = new CardsSQL(
+            const repo = new CardsDB(
                 trx('cards'),
                 trx('cards').count({ count: '*' })
             );

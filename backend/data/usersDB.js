@@ -1,13 +1,13 @@
-import { db } from './sql.js';
+import { db } from './db.js';
 
-export default class UsersSQL {
+export default class UsersDB {
     constructor(builder = null, counter = null) {
         this.builder = builder || db('users');
         this.counter = counter || db('users').count({ count: '*' });
     }
 
     static New() {
-        return new UsersSQL();
+        return new UsersDB();
     }
 
     async insert({ id, username, email, avatar, created_at = new Date() }) {
@@ -62,7 +62,7 @@ export default class UsersSQL {
     // Транзакция — передаём функцию, внутри которой используем trx вместо db
     async transaction(fn) {
         return await db.transaction(async trx => {
-            const repo = new UsersSQL(trx('users'), trx('users').count({ count: '*' }));
+            const repo = new UsersDB(trx('users'), trx('users').count({ count: '*' }));
             await fn(repo);
         });
     }

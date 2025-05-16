@@ -1,6 +1,7 @@
-import Config from './tools/config/config.js';
-import buildLogger from './tools/logger/logger.js';
-import Migrator from './tools/migrator/migrator.js';
+import Config from './tools/config/Config.js';
+import Logger from './tools/logger/Logger.js';
+import Migrator from './tools/migrator/Migrator.js';
+import { Api } from './api/Api.js';
 
 export default class Backend {
     /**
@@ -11,9 +12,9 @@ export default class Backend {
     static async Run(args = []) {
         const cfg = Config.load('./config.yaml');
 
-        const log = buildLogger({
+        const log = new Logger({
             level: cfg.server.logging.level,
-            json: cfg.server.logging.format === 'json'
+            format: cfg.server.logging.format,
         });
 
         const [command, subcommand] = args; // e.g. ['service','run'] or ['migrate','up']
@@ -31,11 +32,29 @@ export default class Backend {
                 log.info('Migrations down completed.');
                 break;
 
-            case 'service run':
+            case 'service run': {
                 log.info('Starting HTTP server...');
+                const api = new Api(cfg, log);
+                api.start();
                 log.info(`Server started on ${cfg.server.host}:${cfg.server.port}`);
                 log.info('Press Ctrl+C to stop the server.');
-                break;
+
+                // Ловим Ctrl+C
+                process.on('SIGINT', async () => {
+                    log.info('SIGINT received, shutting down…');
+                    try {
+                        await api.stop();
+                        log.info('Server stopped gracefully');
+                        process.exit(0);
+                    } catch (err) {
+                        log.error('Error during shutdown:', err);
+                        process.exit(1);
+                    }
+                });
+
+                await new Promise(() => {}); // вечно «висим» до Ctrl+C
+                return true;
+            }
 
             default:
                 log.error(`Unknown command: ${args.join(' ')}`);
