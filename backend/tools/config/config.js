@@ -5,6 +5,7 @@ import yaml     from 'js-yaml';
 class Config {
     constructor(raw) {
         this.server = {
+            host:  raw.server.host,
             port: raw.server.port,
             logging: {
                 level:  raw.server.logging.level,
@@ -19,7 +20,11 @@ class Config {
 
         this.database = {
             sql: {
-                url: raw.database.sql.url,
+                host: raw.database.sql.host,
+                port: raw.database.sql.port,
+                user: raw.database.sql.user,
+                password: raw.database.sql.password,
+                name: raw.database.sql.name,
             }
         };
 

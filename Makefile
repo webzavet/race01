@@ -36,3 +36,12 @@ generate-resources: bundle-spec
 	   -exec mv {} $(WEB_DOCS_DIR)/ \;
 
 	@echo "✅ Generation complete."
+
+migrate-up:
+	@node index.js migrate up
+
+migrate-down:
+	@node index.js migrate down
+
+run-service:
+	@node index.js run service

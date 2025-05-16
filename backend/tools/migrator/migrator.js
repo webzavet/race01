@@ -17,6 +17,8 @@ class Migrator {
             await db.raw(sql);
         }
         console.log('All up migrations applied.');
+
+        process.exit(0);
     }
 
     static async down() {
@@ -31,6 +33,8 @@ class Migrator {
             await db.raw(sql);
         }
         console.log('All down migrations applied.');
+
+        process.exit(0);
     }
 }
 
