@@ -1,5 +1,5 @@
 import knex from 'knex';
-import Config from '../../modules/config/config';
+import Config from '../tools/config/config.js';
 
 const config = Config.load('./config.yaml');
 export const db = knex({
