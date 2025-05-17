@@ -1,23 +1,25 @@
 import express from 'express';
 import Config from '../tools/config/Config.js';
 import Logger from '../tools/logger/Logger.js';
+import router  from './router.js';
 
-// import { authRoutes }  from './modules/auth/routes.js';
-// import { gameRoutes }  from './modules/game/routes.js';
 
 export class Api {
     constructor(cfg, log) {
         this.cfg = cfg;
         this.log = log;
+
         this.app = express();
         this.server = null;
 
         this.app.use(express.json());
 
-        const deps = { cfg: this.cfg, log: this.log /* + сервисы */ };
+        this.app.use((req, _res, next) => {
+            this.log.info(`${req.method} ${req.originalUrl}`);
+            next();
+        });
 
-        // this.app.use('/auth',  authRoutes(deps));
-        // this.app.use('/game',  gameRoutes(deps));
+        this.app.use("/auth", router);
     }
 
     start() {

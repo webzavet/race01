@@ -6,16 +6,16 @@ info:
   version: 0.0.1
 
 paths:
-  /test:
-    post:
-      tags:
-        - Test
-      description: Test
-      responses:
-        '201':
-          description: successfully
+  /auth/reg:
+    $ref: './paths/Registration.yaml'
+  /auth/login:
+    $ref: './paths/Login.yaml'
 
 components:
   schemas:
     Token:
       $ref: './spec/components/schemas/Token.yaml'
+    Registration:
+      $ref: './spec/components/schemas/Registration.yaml'
+    Login:
+      $ref: './spec/components/schemas/Login.yaml'

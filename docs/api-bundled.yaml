@@ -4,14 +4,110 @@ info:
   description: Race01
   version: 0.0.1
 paths:
-  /test:
+  /auth/reg:
     post:
       tags:
-        - Test
-      description: Test
+        - Auth
+      summary: Login user
+      description: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Registration'
       responses:
-        '201':
-          description: successfully
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Registration'
+        '409':
+          description: User with this username already exists
+          content:
+            application/json:
+              schema:
+                description: Conflict
+                content:
+                  application/vnd.api+json:
+                    schema:
+                      $ref: '#/paths/~1auth~1reg/post/responses/500/content/application~1vnd.api%2Bjson/schema'
+        '500':
+          description: Internal server error
+          content:
+            application/vnd.api+json:
+              schema:
+                description: 'Standard JSON:API error'
+                type: object
+                required:
+                  - errors
+                properties:
+                  errors:
+                    type: array
+                    description: Non empty array of errors occurred during request processing
+                    items:
+                      type: object
+                      required:
+                        - title
+                        - status
+                      properties:
+                        title:
+                          type: string
+                          description: 'Title is a short, human-readable summary of the problem'
+                          example: Bad Request
+                        detail:
+                          type: string
+                          description: Detail is a human-readable explanation specific to this occurrence of the problem
+                          example: Request body was expected
+                        status:
+                          type: integer
+                          description: Status is the HTTP status code applicable to this problem
+                          example: 400
+                          enum:
+                            - 400
+                            - 401
+                            - 403
+                            - 404
+                            - 409
+                            - 500
+  /auth/login:
+    post:
+      tags:
+        - Auth
+      summary: Login user
+      description: Login user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Login'
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Token'
+        '404':
+          description: User with this username does not exist
+          content:
+            application/json:
+              schema:
+                description: Requested resource does not exist.
+                content:
+                  application/vnd.api+json:
+                    schema:
+                      $ref: '#/paths/~1auth~1reg/post/responses/500/content/application~1vnd.api%2Bjson/schema'
+        '409':
+          description: first password and second password do not match
+          content:
+            application/json:
+              schema:
+                $ref: '#/paths/~1auth~1reg/post/responses/409/content/application~1json/schema'
+        '500':
+          $ref: '#/paths/~1auth~1reg/post/responses/500'
 components:
   schemas:
     Token:
@@ -22,9 +118,13 @@ components:
         data:
           type: object
           required:
+            - id
             - type
             - attributes
           properties:
+            id:
+              type: string
+              description: username
             type:
               type: string
               enum:
@@ -37,3 +137,61 @@ components:
                 token:
                   type: string
                   description: Refresh Token
+    Registration:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - id
+            - type
+            - attributes
+          properties:
+            id:
+              type: string
+              description: username
+            type:
+              type: string
+              enum:
+                - registration
+            attributes:
+              type: object
+              required:
+                - password_one
+                - password_two
+              properties:
+                password_one:
+                  type: string
+                  description: Password first
+                password_two:
+                  type: string
+                  description: Password second
+    Login:
+      type: object
+      required:
+        - data
+      properties:
+        data:
+          type: object
+          required:
+            - id
+            - type
+            - attributes
+          properties:
+            id:
+              type: string
+              description: username
+            type:
+              type: string
+              enum:
+                - login
+            attributes:
+              type: object
+              required:
+                - password
+              properties:
+                password:
+                  type: string
+                  description: Password

@@ -1,0 +1,26 @@
+post:
+  tags:
+    - Auth
+  summary: Login user
+  description: Login user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../spec/components/schemas/Registration.yaml'
+  responses:
+    '200':
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Registration.yaml'
+    '409':
+      description: User with this username already exists
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/conflict.yaml'
+    '500':
+      $ref: '../spec/components/responses/internalError.yaml'

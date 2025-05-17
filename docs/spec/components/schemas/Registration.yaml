@@ -1,0 +1,23 @@
+type: object
+required:
+  - data
+properties:
+  data:
+    type: object
+    required:
+      - username
+      - password
+      - password_confirmation
+    properties:
+      username:
+        type: string
+        example: johndoe
+        description: The username of the user.
+      password:
+        type: string
+        example: password123
+        description: The password of the user.
+      password_confirmation:
+        type: string
+        example: password123
+        description: The password confirmation of the user.

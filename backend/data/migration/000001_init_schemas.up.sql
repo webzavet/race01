@@ -1,7 +1,6 @@
 CREATE TABLE `users` (
-    `id` CHAR(36) PRIMARY KEY,
-    `username` VARCHAR(255) UNIQUE,
-    `email` VARCHAR(255) UNIQUE,
+    `username` VARCHAR(255) PRIMARY KEY,
+    `password_hash` VARCHAR(255),
     `avatar` VARCHAR(512),
     `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );

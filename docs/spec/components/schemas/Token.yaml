@@ -5,17 +5,14 @@ properties:
   data:
     type: object
     required:
-      - type
-      - attributes
+      - username
+      - token
     properties:
-      type:
+      username:
         type: string
-        enum: [ token ]
-      attributes:
-        type: object
-        required:
-          - token
-        properties:
-          token:
-            type: string
-            description: "Refresh Token"
+        example: johndoe
+        description: The username of the user.
+      token:
+        type: string
+        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c
+        description: The JWT token for the user.

@@ -1,0 +1,32 @@
+post:
+  tags:
+    - Auth
+  summary: Login user
+  description: Login user
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../spec/components/schemas/Login.yaml'
+  responses:
+    '200':
+      description: Login successful
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Token.yaml'
+    '409':
+      description: first password and second password do not match
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/conflict.yaml'
+    '404':
+      description: User with this username does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/notFound.yaml'
+    '500':
+      $ref: '../spec/components/responses/internalError.yaml'

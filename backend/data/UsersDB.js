@@ -6,12 +6,12 @@ export default class UsersDB {
         this.counter = counter || db('users').count({ count: '*' });
     }
 
-    static New() {
+    New() {
         return new UsersDB();
     }
 
-    async insert({ id, username, email, avatar, created_at = new Date() }) {
-        const user = { id, username, email, avatar, created_at };
+    async insert({username, password_hash, avatar, created_at = new Date() }) {
+        const user = {username, password_hash, avatar, created_at };
         await db('users').insert(user);
         return user;
     }
@@ -41,21 +41,9 @@ export default class UsersDB {
         return this;
     }
 
-    filterId(id) {
-        this.builder  = this.builder.where('id', id);
-        this.counter  = this.counter.where('id', id);
-        return this;
-    }
-
     filterUsername(username) {
         this.builder  = this.builder.where('username', username);
         this.counter  = this.counter.where('username', username);
-        return this;
-    }
-
-    filterEmail(email) {
-        this.builder  = this.builder.where('email', email);
-        this.counter  = this.counter.where('email', email);
         return this;
     }
 
