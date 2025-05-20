@@ -1,2 +1,4 @@
 DROP TABLE IF EXISTS `cards`;
 DROP TABLE IF EXISTS `users`;
+DROP TABLE IF EXISTS `rooms`;
+DROP TABLE IF EXISTS `room_members`;

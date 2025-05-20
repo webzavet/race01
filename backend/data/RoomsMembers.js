@@ -1,19 +1,19 @@
 import { db } from './db.js';
 
-export default class UsersDB {
-    constructor(builder = null, counter = null) {
-        this.builder = builder || db('users');
-        this.counter = counter || db('users').count({ count: '*' });
+export default class RoomsMembers {
+    constructor(builder = null, counter = null ) {
+        this.builder = builder || db('rooms_members');
+        this.counter = counter || db('rooms_members').count({ count: '*' });
     }
 
     New() {
-        return new UsersDB();
+        return new RoomsMembers();
     }
 
-    async insert({username, passHash, avatar, createdAt = new Date() }) {
-        const user = {username, passHash, avatar, createdAt };
-        await db('users').insert(user);
-        return user;
+    async insert({username, roomId, createdAt = new Date() }) {
+        const room = {username, roomId, createdAt };
+        await db('rooms_members').insert(room);
+        return room;
     }
 
     async delete() {
@@ -41,17 +41,15 @@ export default class UsersDB {
         return this;
     }
 
+    filterRoomName(name) {
+        this.builder  = this.builder.where('name', name);
+        this.counter  = this.counter.where('name', name);
+        return this;
+    }
+
     filterUsername(username) {
         this.builder  = this.builder.where('username', username);
         this.counter  = this.counter.where('username', username);
         return this;
     }
-
-    // Транзакция — передаём функцию, внутри которой используем trx вместо db
-    async transaction(fn) {
-        return await db.transaction(async trx => {
-            const repo = new UsersDB(trx('users'), trx('users').count({ count: '*' }));
-            await fn(repo);
-        });
-    }
-}
+};

@@ -1,5 +1,5 @@
 import UsersDB from '../../data/UsersDB.js';
-import PasswordHasher from './PasswordHasher.js';
+import PasswordHasher from '../../tools/password_hasher/PasswordHasher.js';
 import TokenManager from '../../tools/tokens/TokenManager.js';
 
 export default class AuthDomain {

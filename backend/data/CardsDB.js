@@ -13,7 +13,7 @@ export default class CardsDB {
     async insert({
         id,
         name,
-        icon      = null,
+        icon = null,
         descr,
         damage,
         defence,

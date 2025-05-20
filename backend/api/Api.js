@@ -2,6 +2,7 @@ import express from 'express';
 import Config from '../tools/config/Config.js';
 import Logger from '../tools/logger/Logger.js';
 import router  from './router.js';
+import { authMiddleware } from './middleware/middleware.js';
 
 
 export class Api {
@@ -20,6 +21,9 @@ export class Api {
         });
 
         this.app.use("/auth", router);
+
+        router.use(authMiddleware);
+
     }
 
     start() {
