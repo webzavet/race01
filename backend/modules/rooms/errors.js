@@ -60,6 +60,12 @@ export class RoomIsClosedError extends AppError {
     }
 }
 
+export class RoomIsNotEnoughPlayersError extends AppError {
+    constructor(msg = 'Room is not enough players') {
+        super(msg, 'ROOM_IS_NOT_ENOUGH_PLAYERS', 403);
+    }
+}
+
 export class RoomIsFullError extends AppError {
     constructor(msg = 'Room is full') {
         super(msg, 'ROOM_IS_FULL', 403);

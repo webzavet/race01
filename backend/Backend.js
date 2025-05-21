@@ -1,5 +1,5 @@
 import Config from './tools/config/Config.js';
-import Logger from './tools/logger/Logger.js';
+import log from './tools/logger/Logger.js';
 import Migrator from './tools/migrator/Migrator.js';
 import { Api } from './api/Api.js';
 import config from './tools/config/Config.js';
@@ -11,11 +11,6 @@ export default class Backend {
      * @returns {Promise<boolean>}
      */
     static async Run(args = []) {
-        const log = new Logger({
-            level: config.server.logging.level,
-            format: config.server.logging.format,
-        });
-
         const [command, subcommand] = args; // e.g. ['service','run'] or ['migrate','up']
 
         switch (`${command} ${subcommand || ''}`.trim()) {

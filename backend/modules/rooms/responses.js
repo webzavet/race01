@@ -2,7 +2,7 @@ export function renderRoom(room) {
     let players = [];
     for (let i = 0; i < room.players.length; i++) {
         players.push({
-            username: room.players[i].username
+            username: room.players[i]
         });
     }
     return {

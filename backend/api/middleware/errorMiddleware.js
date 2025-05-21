@@ -20,6 +20,7 @@ import {
     RoomIsFullError
 } from '../../modules/rooms/errors.js';
 import {AppError, InternalError} from "../../tools/errors/AppError.js";
+import log from "../../tools/logger/Logger.js";
 
 /**
  * @type {import('express').ErrorRequestHandler}
@@ -33,6 +34,8 @@ export function errorMiddleware(err, req, res, next) {
         console.error('Unexpected error:', err);
         errorToHandle = new InternalError('Unexpected error occurred', err);
     }
+
+    log.error(errorToHandle.message, errorToHandle.cause);
 
     // И возвращаем клиенту код и сообщение из errorToHandle
     return res

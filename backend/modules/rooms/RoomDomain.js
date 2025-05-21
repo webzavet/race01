@@ -14,7 +14,7 @@ import {
     PlayersNotFoundError,
     RoomIsClosedError,
     RoomIsFullError,
-    RoomPasswordIsInvalidError,
+    RoomPasswordIsInvalidError, RoomIsNotEnoughPlayersError,
 } from "./errors.js";
 
 export default class RoomsDomain {
@@ -57,7 +57,7 @@ export default class RoomsDomain {
                 createdAt: createdAt,
             };
 
-            await trx.rooms().insert(newRoom);
+            await trx.rooms.insert(newRoom);
 
             const player = {
                 id:        uuidv4(),
@@ -66,13 +66,13 @@ export default class RoomsDomain {
                 createdAt: createdAt,
             };
 
-            await trx.players().insert(player);
+            await trx.players.insert(player);
         })
 
         return {
             roomName: roomName,
             status: 'waiting',
-            players: [initiator],
+            players: [ initiator ],
             createdAt: createdAt,
         }
     }
@@ -90,10 +90,12 @@ export default class RoomsDomain {
             throw new PlayersNotFoundError('No players found');
         }
 
+        let usernames = players.map(player => player.username);
+
         return {
             roomName: room.name,
             status: room.status,
-            players: players,
+            players: usernames,
             createdAt: room.createdAt,
         }
     }
@@ -107,7 +109,7 @@ export default class RoomsDomain {
             throw new PlayerNotFoundError('Player not found');
         }
 
-        if (player.roomName !== roomName) {
+        if (player.room_name !== roomName) {
             throw new PlayersIsNotInThisRoomError('Player not in this room');
         }
 
@@ -116,11 +118,23 @@ export default class RoomsDomain {
             throw new RoomNotFoundError('Room not found');
         }
 
-        if (room.status === 'closed') {
-            return // for idempotency
+        let players = await this.db.players().filterRoomName(roomName).select();
+        if (players.length <= 1) {
+            throw new RoomIsNotEnoughPlayersError('Room is not enough players');
         }
 
-        await this.db.rooms().filterName(roomName).updateStatus('closed');
+        let usernames = players.map(player => player.username);
+
+        if (room.status === 'playing') {
+            return {
+                roomName: room.name,
+                status: room.status,
+                players: usernames,
+                createdAt: room.createdAt,
+            }
+        }
+
+        await this.db.rooms().filterName(roomName).updateStatus('playing');
     }
 
     async deleteRoom(
@@ -139,52 +153,11 @@ export default class RoomsDomain {
 
         await this.db.transaction(async (trx) => {
 
-            await this.db.players.filterRoomName(roomName).delete()
+            await this.db.players().filterRoomName(roomName).delete()
 
-            await this.db.rooms.filterName(roomName).delete()
+            await this.db.rooms().filterName(roomName).delete()
         })
     }
-
-    async createPlayer(
-        username,
-        roomName,
-    ) {
-        let player = await this.db.players().filterUsername(username).get();
-        if (player) {
-            throw new PlayerAlreadyInRoomError('User already in a room');
-        }
-
-        let room = await this.db.rooms().filterName(roomName).get();
-        if (!room) {
-            throw new RoomNotFoundError('Room not found');
-        }
-
-        const newPlayer = {
-            id:        uuidv4(),
-            username: username,
-            roomName: roomName,
-            createdAt: new Date(),
-        };
-
-        await this.db.players().insert(newPlayer);
-    }
-
-    async deletePlayer(
-        username,
-        roomName,
-    ) {
-        let existingUser = await this.db.players().filterUsername(username).get();
-        if (!existingUser) {
-            throw new PlayerNotFoundError('Player not found');
-        }
-
-        if (existingUser.roomName !== roomName) {
-            throw new PlayersIsNotInThisRoomError('Player not in this room');
-        }
-
-        await this.db.players().filterUsername(username).delete();
-    }
-
 
     async joinRoom(
         username,
@@ -195,25 +168,22 @@ export default class RoomsDomain {
         if (!room) {
             throw new RoomNotFoundError('Room not found');
         }
+        if (room.status !== 'waiting') {
+            throw new RoomIsClosedError('Room is not in waiting status');
+        }
 
         let player = await this.db.players().filterUsername(username).get();
         if (player) {
-            if (player.roomName === roomName) {
-                return // for idempotency
-            }
-            if (player.status !== 'waiting') {
-                throw new RoomIsClosedError('Room is not in waiting status');
-            }
             throw new PlayerAlreadyInRoomError('Player already in a room');
         }
 
 
         let players = await this.db.players().filterRoomName(roomName).count();
-        if (players >= room.maxPlayers) {
+        if (players >= room.max_players) {
             throw new RoomIsFullError('Room is full');
         }
 
-        const isPasswordValid = await PasswordHasher.verifyPassword(roomPassword, room.passHash);
+        const isPasswordValid = await PasswordHasher.verifyPassword(roomPassword, room.password_hash);
         if (!isPasswordValid) {
             throw new RoomPasswordIsInvalidError('Invalid password');
         }
@@ -231,10 +201,12 @@ export default class RoomsDomain {
 
         players = await this.db.players().filterRoomName(roomName).select();
 
+        let usernames = players.map(player => player.username);
+
         return {
-            roomName:   roomName,
-            roomStatus: room.status,
-            players:    players,
+            roomName:    roomName,
+            roomStatus:  room.status,
+            players:     usernames,
             createdAt:   room.createdAt,
         }
     }
@@ -248,16 +220,17 @@ export default class RoomsDomain {
             throw new PlayersNotFoundError('Player not found');
         }
 
-        if (player.roomName !== roomName) {
-            return // for idempotency
+        if (player.room_name !== roomName) {
+            throw new PlayersIsNotInThisRoomError('Player not in this room');
         }
 
+        await this.db.transaction(async (trx) => {
+            await this.db.players().filterUsername(username).delete();
 
-        await this.db.players().filterUsername(username).delete();
-
-        const currentPlayers = await this.db.players().filterRoomName(roomName).count();
-        if (currentPlayers <= 0) {
-            await this.deleteRoom(roomName)
-        }
+            let players = await this.db.players().filterRoomName(roomName).count();
+            if (players === 0) {
+                await this.db.rooms().filterName(roomName).delete();
+            }
+        })
     }
 }

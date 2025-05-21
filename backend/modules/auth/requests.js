@@ -1,5 +1,7 @@
 // backend/api/rest/requests/index.js
 
+import {BadRequestError} from "../../tools/errors/AppError.js";
+
 /**
  * Парсит и валидирует тело запроса на регистрацию
  * Ожидаемый формат:
@@ -18,13 +20,13 @@ export function parseRegister(body) {
     const { data } = body || {};
 
     if (!data || typeof data !== 'object') {
-        throw new Error('Missing `data` object');
+        throw new BadRequestError('Missing `data` object');
     }
 
     const { username, password, password_confirmation } = data;
 
     if (!username || !password || !password_confirmation) {
-        throw new Error('Missing required registration fields');
+        throw new BadRequestError('Missing required registration fields');
     }
 
     return { username, password, password_confirmation };
@@ -47,13 +49,13 @@ export function parseLogin(body) {
     const { data } = body || {};
 
     if (!data || typeof data !== 'object') {
-        throw new Error('Missing `data` object');
+        throw new BadRequestError('Missing `data` object');
     }
 
     const { username, password } = data;
 
     if (!username || !password) {
-        throw new Error('Missing required login fields');
+        throw new BadRequestError('Missing required login fields');
     }
 
     return { username, password };

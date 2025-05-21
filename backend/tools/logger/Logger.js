@@ -1,6 +1,7 @@
 import { createLogger, format as winstonFormat, transports } from 'winston';
+import config from "../config/Config.js";
 
-export default class Logger {
+export class Logger {
     /**
      * @param {Object} options
      * @param {string} [options.level='info']
@@ -49,3 +50,10 @@ export default class Logger {
         this.logger.log(level, message, meta);
     }
 }
+
+const log = new Logger({
+    level: config.server.logging.level,
+    format: config.server.logging.format,
+})
+
+export default log

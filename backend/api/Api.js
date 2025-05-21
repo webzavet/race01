@@ -10,21 +10,20 @@ import {
     joinRoomHandler,
     leaveRoomHandler
 } from "../modules/rooms/handlers.js";
+import config from "../tools/config/Config.js";
+import log from "../tools/logger/Logger.js";
 
 const router = express.Router();
 
 export class Api {
-    constructor(cfg, log) {
-        this.cfg = cfg;
-        this.log = log;
-
+    constructor() {
         this.app = express();
         this.server = null;
 
         this.app.use(express.json());
 
         this.app.use((req, _res, next) => {
-            this.log.info(`${req.method} ${req.originalUrl}`);
+            log.info(`${req.method} ${req.originalUrl}`);
             next();
         });
 
@@ -36,20 +35,21 @@ export class Api {
         // ROOMS
         const roomsRouter = express.Router();
         roomsRouter.use(authMiddleware);
-        roomsRouter.post   ('/create', createRoomHandler);
+        roomsRouter.post   ('/', createRoomHandler);
         roomsRouter.get    ('/:roomName', getRoomHandler);    // читаем из params
-        roomsRouter.post   ('/join',   joinRoomHandler);
-        roomsRouter.delete ('/leave',  leaveRoomHandler);
-        roomsRouter.patch  ('/close',  closeRoomHandler);
-        roomsRouter.delete ('/delete', deleteRoomHandler);
+        roomsRouter.patch  ('/:roomName',  closeRoomHandler);
+        roomsRouter.delete ('/:roomName', deleteRoomHandler);
+
+        roomsRouter.post   ('/:roomName/player',   joinRoomHandler);
+        roomsRouter.delete ('/:roomName/player',  leaveRoomHandler);
         this.app.use('/rooms', roomsRouter);
 
         this.app.use(errorMiddleware)
     }
 
     start() {
-        this.server = this.app.listen(this.cfg.server.port, () =>
-            this.log.info(`API started on ${this.cfg.server.port}`));
+        this.server = this.app.listen(config.server.port, () =>
+            log.info(`API started on ${config.server.port}`));
     }
 
     stop() {

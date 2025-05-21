@@ -43,8 +43,8 @@ export default class PlayersRepo {
     }
 
     filterRoomName(name) {
-        this.builder  = this.builder.where('name', name);
-        this.counter  = this.counter.where('name', name);
+        this.builder  = this.builder.where('room_name', name);
+        this.counter  = this.counter.where('room_name', name);
         return this;
     }
 
