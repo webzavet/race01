@@ -1,13 +1,8 @@
-// backend/api/rest/middleware/auth.js
-import Config from '../../tools/config/Config.js';
+import config from '../../tools/config/Config.js';
 import TokenManager from '../../tools/tokens/TokenManager.js'; // или ваш путь
 
 // Инициализируем один раз при импорте
-const cfg = Config.load('./config.yaml');
-const tm = new TokenManager({
-    secretKey: cfg.jwt.secretKey,
-    expiresIn: cfg.jwt.expiresIn,
-});
+const tm = new TokenManager();
 
 /**
  * Express-middleware для аутентификации по JWT.

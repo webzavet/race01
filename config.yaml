@@ -4,10 +4,13 @@ server:
   logging:
     level: "debug"
     format: "text"
+  default:
+    user_avatar: "https://example.com/default_avatar.png"
 
 jwt:
   token:
     secret_key: "supersecretkey"
+    ttl: 2678400
 
 database:
   sql:
@@ -28,3 +31,4 @@ aws:
   access_key_id: "your_access_key_id"
   secret_access_key: "your_secret_access_key"
   bucket_name: "your_bucket_name"
+

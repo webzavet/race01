@@ -1,9 +1,17 @@
 import express from 'express';
-import Config from '../tools/config/Config.js';
-import Logger from '../tools/logger/Logger.js';
-import router  from './router.js';
-import { authMiddleware } from './middleware/middleware.js';
+import { authMiddleware } from './middleware/authMiddleware.js';
+import { errorMiddleware } from './middleware/errorMiddleware.js';
+import {loginHandler, registerHandler} from "../modules/auth/handlers.js";
+import {
+    closeRoomHandler,
+    createRoomHandler,
+    deleteRoomHandler,
+    getRoomHandler,
+    joinRoomHandler,
+    leaveRoomHandler
+} from "../modules/rooms/handlers.js";
 
+const router = express.Router();
 
 export class Api {
     constructor(cfg, log) {
@@ -20,10 +28,23 @@ export class Api {
             next();
         });
 
-        this.app.use("/auth", router);
+        const authRouter = express.Router();
+        authRouter.post('/register', registerHandler);
+        authRouter.post('/login',    loginHandler);
+        this.app.use('/auth', authRouter);
 
-        router.use(authMiddleware);
+        // ROOMS
+        const roomsRouter = express.Router();
+        roomsRouter.use(authMiddleware);
+        roomsRouter.post   ('/create', createRoomHandler);
+        roomsRouter.get    ('/:roomName', getRoomHandler);    // читаем из params
+        roomsRouter.post   ('/join',   joinRoomHandler);
+        roomsRouter.delete ('/leave',  leaveRoomHandler);
+        roomsRouter.patch  ('/close',  closeRoomHandler);
+        roomsRouter.delete ('/delete', deleteRoomHandler);
+        this.app.use('/rooms', roomsRouter);
 
+        this.app.use(errorMiddleware)
     }
 
     start() {

@@ -2,6 +2,7 @@ import Config from './tools/config/Config.js';
 import Logger from './tools/logger/Logger.js';
 import Migrator from './tools/migrator/Migrator.js';
 import { Api } from './api/Api.js';
+import config from './tools/config/Config.js';
 
 export default class Backend {
     /**
@@ -10,11 +11,9 @@ export default class Backend {
      * @returns {Promise<boolean>}
      */
     static async Run(args = []) {
-        const cfg = Config.load('./config.yaml');
-
         const log = new Logger({
-            level: cfg.server.logging.level,
-            format: cfg.server.logging.format,
+            level: config.server.logging.level,
+            format: config.server.logging.format,
         });
 
         const [command, subcommand] = args; // e.g. ['service','run'] or ['migrate','up']
@@ -34,9 +33,9 @@ export default class Backend {
 
             case 'service run': {
                 log.info('Starting HTTP server...');
-                const api = new Api(cfg, log);
+                const api = new Api(config, log);
                 api.start();
-                log.info(`Server started on ${cfg.server.host}:${cfg.server.port}`);
+                log.info(`Server started on ${config.server.host}:${config.server.port}`);
                 log.info('Press Ctrl+C to stop the server.');
 
                 // Ловим Ctrl+C

@@ -1,18 +1,19 @@
-import { db } from './db.js';
+import { v4 as uuidv4 } from 'uuid';
 
-export default class RoomsMembers {
+export default class PlayersRepo {
     constructor(builder = null, counter = null ) {
-        this.builder = builder || db('rooms_members');
-        this.counter = counter || db('rooms_members').count({ count: '*' });
+        this.builder = builder
+        this.counter = counter
     }
 
-    New() {
-        return new RoomsMembers();
-    }
-
-    async insert({username, roomId, createdAt = new Date() }) {
-        const room = {username, roomId, createdAt };
-        await db('rooms_members').insert(room);
+    async insert({id = uuidv4(), username, roomName, createdAt = new Date() }) {
+        const room = {
+            id: id,
+            username: username,
+            room_name: roomName,
+            created_at: createdAt
+        };
+        await this.builder.insert(room);
         return room;
     }
 

@@ -1,13 +1,7 @@
-import { db } from './db.js';
-
-export default class CardsDB {
+export default class CardsRepo {
     constructor(builder = null, counter = null) {
-        this.builder = builder || db('cards');
-        this.counter = counter || db('cards').count({ count: '*' });
-    }
-
-    static New() {
-        return new CardsDB();
+        this.builder = builder
+        this.counter = counter
     }
 
     async insert({
@@ -19,10 +13,20 @@ export default class CardsDB {
         defence,
         attribute,
         cost,
-        created_at = new Date(),
+        createdAt = new Date(),
     }) {
-        const card = { id, name, icon, descr, damage, defence, attribute, cost, created_at };
-        await db('cards').insert(card);
+        const card = {
+            id:         id,
+            name:       name,
+            icon:       icon,
+            descr:      descr,
+            damage:     damage,
+            defence:    defence,
+            attribute:  attribute,
+            cost:       cost,
+            created_at: createdAt,
+        };
+        await this.builder.insert(card);
         return card;
     }
 
@@ -82,16 +86,5 @@ export default class CardsDB {
         this.builder = this.builder.whereBetween('cost', [min, max]);
         this.counter = this.counter.whereBetween('cost', [min, max]);
         return this;
-    }
-
-    // Транзакция: fn получает новый repo, внутри которого все запросы в рамках одного trx
-    async transaction(fn) {
-        return db.transaction(async trx => {
-            const repo = new CardsDB(
-                trx('cards'),
-                trx('cards').count({ count: '*' })
-            );
-            await fn(repo);
-        });
     }
 }

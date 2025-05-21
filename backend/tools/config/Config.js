@@ -11,11 +11,15 @@ class Config {
                 level:  raw.server.logging.level,
                 format: raw.server.logging.format,
             },
+
+            default : {
+                userAvatar: raw.server.default.user_avatar,
+            }
         };
 
         this.jwt = {
             secretKey: raw.jwt.token.secret_key,
-            expiresIn: raw.jwt.token.expires_in,
+            ttl: raw.jwt.token.ttl,
         };
 
         this.database = {
@@ -61,4 +65,6 @@ class Config {
     }
 }
 
-export default Config;
+const config = Config.load('./config.yaml');
+
+export default config;

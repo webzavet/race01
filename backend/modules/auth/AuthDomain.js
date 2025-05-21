@@ -1,42 +1,40 @@
-import UsersDB from '../../data/UsersDB.js';
+import {database} from "../../data/Database.js";
 import PasswordHasher from '../../tools/password_hasher/PasswordHasher.js';
 import TokenManager from '../../tools/tokens/TokenManager.js';
+import {InvalidPasswordError, PasswordMismatchError, UserAlreadyExistsError, UserNotFoundError} from "./errors.js";
+import config from "../../tools/config/Config.js";
 
 export default class AuthDomain {
-    constructor(cfg) {
-        this.db = new UsersDB;
-        this.tokenManager = new TokenManager({
-            secretKey: cfg.secretKey,
-            expiresIn: cfg.expiresIn,
-        });
+    constructor() {
+        this.db = database;
+        this.tokenManager = new TokenManager();
     }
 
     async register(
         username,
         password_one,
         password_second,
-        avatar
+        avatar = config.server.default.userAvatar
     ) {
         if (password_one !== password_second) {
-            throw new Error('Passwords do not match');
+            throw new PasswordMismatchError('Passwords do not match');
         }
 
-        const existingUser = await this.db.New().filterUsername(username).get();
-
+        const existingUser = await this.db.users().filterUsername(username).get();
         if (existingUser) {
-            throw new Error('Username already exists');
+            throw new UserAlreadyExistsError('Username already exists');
         }
 
         const pasHash = await PasswordHasher.hashPassword(password_one);
 
         const newUser = {
             username: username,
-            password_hash: pasHash,
+            passHash: pasHash,
             avatar: avatar,
-            created_at: new Date(),
+            createdAt: new Date(),
         };
 
-        await this.db.New().insert(newUser);
+        await this.db.users().insert(newUser);
 
         return {
             username: username,
@@ -48,16 +46,14 @@ export default class AuthDomain {
         username,
         password
     ) {
-        const user = await this.db.New().filterUsername(username).get();
-
+        const user = await this.db.users().filterUsername(username).get();
         if (!user) {
-            throw new Error('User not found');
+            throw new UserNotFoundError('User not found');
         }
 
         const isPasswordValid = await  PasswordHasher.verifyPassword(password, user.password_hash);
-
         if (!isPasswordValid) {
-            throw new Error('Invalid password');
+            throw new InvalidPasswordError('Invalid password');
         }
 
         return {

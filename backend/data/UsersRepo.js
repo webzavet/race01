@@ -1,18 +1,19 @@
-import { db } from './db.js';
+import config from "../tools/config/Config.js";
 
-export default class UsersDB {
+export default class UsersRepo {
     constructor(builder = null, counter = null) {
-        this.builder = builder || db('users');
-        this.counter = counter || db('users').count({ count: '*' });
+        this.builder = builder
+        this.counter = counter
     }
 
-    New() {
-        return new UsersDB();
-    }
-
-    async insert({username, passHash, avatar, createdAt = new Date() }) {
-        const user = {username, passHash, avatar, createdAt };
-        await db('users').insert(user);
+    async insert({username, passHash, avatar = config.server.default.userAvatar, createdAt = new Date() }) {
+        const user = {
+            username: username,
+            password_hash: passHash,
+            avatar: avatar,
+            created_at: createdAt
+        };
+        await this.builder.insert(user);
         return user;
     }
 
@@ -45,13 +46,5 @@ export default class UsersDB {
         this.builder  = this.builder.where('username', username);
         this.counter  = this.counter.where('username', username);
         return this;
-    }
-
-    // Транзакция — передаём функцию, внутри которой используем trx вместо db
-    async transaction(fn) {
-        return await db.transaction(async trx => {
-            const repo = new UsersDB(trx('users'), trx('users').count({ count: '*' }));
-            await fn(repo);
-        });
     }
 }

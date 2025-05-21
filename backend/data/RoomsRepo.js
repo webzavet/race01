@@ -1,13 +1,7 @@
-import { db } from './db';
-
-export default class RoomsDB {
+export default class RoomsRepo {
     constructor(builder = null, counter = null) {
-        this.builder = builder || db('rooms');
-        this.counter = counter || db('rooms').count({ count: '*' });
-    }
-
-    New() {
-        return new RoomsDB();
+        this.builder = builder;
+        this.counter = counter;
     }
 
     async insert({
@@ -17,8 +11,14 @@ export default class RoomsDB {
          status = 'waiting',
          createdAt = new Date()
     }) {
-        const room = {name, passHash, maxPlayers, status, createdAt};
-        await db('rooms').insert(room);
+        const room = {
+            name: name,
+            password_hash: passHash,
+            max_players:  maxPlayers,
+            status: status,
+            created_at: createdAt
+        };
+        await this.builder.insert(room);
         return room;
     }
 

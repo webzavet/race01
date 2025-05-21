@@ -1,17 +1,13 @@
 import jwt from 'jsonwebtoken';
+import config from '../config/Config.js';
 
 export default class TokenManager {
-    /**
-     * @param {Object} options
-     * @param {string} options.secretKey - sk
-     * @param {string|number} options.expiresIn - ttl
-     */
-    constructor({ secretKey, expiresIn }) {
-        if (!secretKey) {
+    constructor() {
+        if (!config) {
             throw new Error('TokenManager: secretKey is required');
         }
-        this.secretKey = secretKey;
-        this.expiresIn = expiresIn;
+        this.secretKey = config.jwt.secretKey;
+        this.expiresIn = config.jwt.ttl;
     }
 
     /**
