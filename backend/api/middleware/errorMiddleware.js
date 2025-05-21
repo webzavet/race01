@@ -22,9 +22,7 @@ import {
 import {AppError, InternalError} from "../../tools/errors/AppError.js";
 import log from "../../tools/logger/Logger.js";
 
-/**
- * @type {import('express').ErrorRequestHandler}
- */
+/** @type {import('express').ErrorRequestHandler} */
 export function errorMiddleware(err, req, res, next) {
     let errorToHandle;
 
@@ -35,13 +33,20 @@ export function errorMiddleware(err, req, res, next) {
         errorToHandle = new InternalError('Unexpected error occurred', err);
     }
 
-    log.error(errorToHandle.message, errorToHandle.cause);
+    // Логируем и саму ошибку, и её причину (cause), если есть
+    console.error(`Error: ${errorToHandle.message}`, errorToHandle.cause);
 
-    // И возвращаем клиенту код и сообщение из errorToHandle
+    // Формируем массив ошибок
+    const payload = {
+        errors: [
+            {
+                code:   errorToHandle.code,
+                detail: errorToHandle.message,
+            }
+        ]
+    };
+
     return res
         .status(errorToHandle.status)
-        .json({
-            code: errorToHandle.code,
-            error: errorToHandle.message,
-        });
+        .json(payload);
 }

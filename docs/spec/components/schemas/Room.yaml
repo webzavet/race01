@@ -1,0 +1,41 @@
+type: object
+required:
+  - data
+properties:
+  data:
+    type: object
+    required:
+      - id
+      - type
+      - attributes
+    properties:
+      id:
+        type: string
+        example: GroveStreet
+        description: Name of the room.
+      type:
+        type: string
+        enum: [room]
+        description: The type of the resource.
+      attributes:
+        type: object
+        required:
+        - status
+        - created_at
+        - players
+        properties:
+          status:
+            type: string
+            enum: [waiting, playing]
+            description: The status of the room.
+          created_at:
+            type: string
+            format: date-time
+            description: The date and time when the room was created.
+            example: 2023-10-01T12:00:00Z
+          players:
+            type: array
+            items:
+              type: string
+              description: The players usernames in the room.
+              example: janedoe

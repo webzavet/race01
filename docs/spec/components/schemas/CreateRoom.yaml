@@ -5,17 +5,17 @@ properties:
   data:
     type: object
     required:
-      -id 
-        - type
-        - attributes
+      - id
+      - type
+      - attributes
     properties:
       id:
         type: string
-        example: johndoe
-        description: The username of the user.
+        example: GroveStreet
+        description: Name of the room.
       type:
         type: string
-        enum: [login]
+        enum: [create_room]
         description: The type of the resource.
       attributes:
         type: object
@@ -25,4 +25,4 @@ properties:
           password:
             type: string
             example: password123
-            description: The password of the user.
+            description: The password of the room.

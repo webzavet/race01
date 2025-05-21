@@ -1,0 +1,73 @@
+post:
+  tags:
+    - Room
+  summary: Join room
+  description: Join room by ID
+  responses:
+    '200':
+      description: Room joined successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Room.yaml'
+    '400':
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/badRequest.yaml'
+    '404':
+      description: Room not found
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/notFound.yaml'
+    '409':
+      description: Conflict with existing room
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/conflict.yaml'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/internalError.yaml'
+
+delete:
+  tags:
+      - Room
+  summary: Leave room
+  description: Leave room by ID
+  responses:
+    '201':
+      description: Room left successfully
+      content:
+          application/json:
+          schema:
+              $ref: '../spec/components/schemas/Room.yaml'
+    '400':
+      description: Invalid request body
+      content:
+          application/json:
+          schema:
+              $ref: '../spec/components/responses/badRequest.yaml'
+    '404':
+      description: Room not found
+      content:
+          application/json:
+          schema:
+              $ref: '../spec/components/responses/notFound.yaml'
+    '409':
+      description: Conflict with existing room
+      content:
+          application/json:
+          schema:
+              $ref: '../spec/components/responses/conflict.yaml'
+    '500':
+      description: Internal server error
+      content:
+          application/json:
+          schema:
+              $ref: '../spec/components/responses/internalError.yaml'

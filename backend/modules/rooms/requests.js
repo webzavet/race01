@@ -8,13 +8,19 @@ export function parseRoomCreate(body) {
         throw new BadRequestError('Missing `data` object');
     }
 
-    const { name, password } = data;
+    const { id, type, attributes } = data;
 
-    if (!name || !password) {
+    if (!id || !type || !attributes) {
         throw new BadRequestError('Missing required room fields');
     }
 
-    return { name, password };
+    if (type !== 'create_room') {
+        throw new BadRequestError('Invalid type');
+    }
+
+    const { password } = attributes;
+
+    return { name: id, password };
 }
 
 export function parseRoomJoin(body) {
@@ -24,11 +30,17 @@ export function parseRoomJoin(body) {
         throw new BadRequestError('Missing `data` object');
     }
 
-    const { password } = data;
+    const { id, type, attributes } = data;
 
-    if ( !password) {
+    if (type !== 'join_room') {
+        throw new BadRequestError('Invalid type');
+    }
+
+    if (!id || !type || !attributes) {
         throw new BadRequestError('Missing required room fields');
     }
 
-    return { password };
+    const { password } = attributes;
+
+    return { name: id, password };
 }

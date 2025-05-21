@@ -9,8 +9,11 @@
 export function renderTokenResponse(username, token) {
     return {
         data: {
-            username: username,
-            token: token
+            id: username,
+            type: 'token',
+            attributes: {
+                token: token
+            }
         }
     };
 }

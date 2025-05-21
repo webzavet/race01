@@ -29,4 +29,8 @@ post:
           schema:
             $ref: '../spec/components/responses/notFound.yaml'
     '500':
-      $ref: '../spec/components/responses/internalError.yaml'
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/internalError.yaml'

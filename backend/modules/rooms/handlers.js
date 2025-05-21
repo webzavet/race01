@@ -3,6 +3,7 @@ import { parseRoomCreate, parseRoomJoin } from "./requests.js";
 import { renderRoom } from "./responses.js";
 import config from "../../tools/config/Config.js";
 import log from "../../tools/logger/Logger.js";
+import {BadRequestError} from "../../tools/errors/AppError.js";
 
 const roomsDomain = new RoomsDomain(config);
 
@@ -58,7 +59,11 @@ export async function deleteRoomHandler(req, res, next) {
 
 export async function joinRoomHandler(req, res, next) {
     try {
-        const { password } = parseRoomJoin(req.body);
+        const { name, password } = parseRoomJoin(req.body);
+
+        if (req.params.roomName === name) {
+            new BadRequestError("Room name is required");
+        }
 
         const roomDomain = new RoomsDomain();
         const room = await roomDomain.joinRoom(req.user.username, req.params.roomName, password);

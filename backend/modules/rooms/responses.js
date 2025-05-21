@@ -7,9 +7,9 @@ export function renderRoom(room) {
     }
     return {
         data: {
+            id: room.name,
             type: 'rooms',
             attributes: {
-                name: room.name,
                 status: room.status,
                 createdAt: room.createdAt,
                 players: players

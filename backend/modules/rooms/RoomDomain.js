@@ -135,6 +135,8 @@ export default class RoomsDomain {
         }
 
         await this.db.rooms().filterName(roomName).updateStatus('playing');
+
+        return await this.getRoom(roomName);
     }
 
     async deleteRoom(

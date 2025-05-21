@@ -13,7 +13,7 @@ import {BadRequestError} from "../../tools/errors/AppError.js";
  *   }
  * }
  * @param {object} body — req.body
- * @returns {{ username: string, password: string, password_confirmation: string }}
+ * @returns {{id, password, password_confirmation}}
  * @throws Error
  */
 export function parseRegister(body) {
@@ -23,13 +23,22 @@ export function parseRegister(body) {
         throw new BadRequestError('Missing `data` object');
     }
 
-    const { username, password, password_confirmation } = data;
-
-    if (!username || !password || !password_confirmation) {
+    const { id, type, attributes } = data;
+    if (!id || !type || !attributes) {
         throw new BadRequestError('Missing required registration fields');
     }
 
-    return { username, password, password_confirmation };
+    if (type !== 'register') {
+        throw new BadRequestError('Invalid type');
+    }
+
+    const { password, password_confirmation } = attributes;
+    if (!password || !password_confirmation) {
+        throw new BadRequestError('Missing required registration fields');
+    }
+
+
+    return { username: id, password, password_confirmation };
 }
 
 /**
@@ -42,7 +51,7 @@ export function parseRegister(body) {
  *   }
  * }
  * @param {object} body — req.body
- * @returns {{ username: string, password: string }}
+ * @returns {{id, password}}
  * @throws Error
  */
 export function parseLogin(body) {
@@ -52,11 +61,19 @@ export function parseLogin(body) {
         throw new BadRequestError('Missing `data` object');
     }
 
-    const { username, password } = data;
-
-    if (!username || !password) {
+    const { id, type, attributes } = data;
+    if (!id || !type || !attributes) {
         throw new BadRequestError('Missing required login fields');
     }
 
-    return { username, password };
+    if (type !== 'login') {
+        throw new BadRequestError('Invalid type');
+    }
+
+    const { password } = attributes;
+    if (!password) {
+        throw new BadRequestError('Missing required login fields');
+    }
+
+    return { username: id, password };
 }

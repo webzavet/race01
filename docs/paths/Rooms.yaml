@@ -1,0 +1,88 @@
+get:
+  tags:
+    - Rooms
+  summary: Get room
+  description: Get room by ID
+  responses:
+    '201':
+      description: Room retrieved successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Room.yaml'
+    '404':
+      description: Room not found
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/notFound.yaml'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/internalError.yaml'
+
+patch:
+  tags:
+    - Rooms
+  summary: Close room
+  description: Close room by ID
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../spec/components/schemas/Room.yaml'
+  responses:
+    '200':
+      description: Room updated successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Room.yaml'
+    '400':
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/badRequest.yaml'
+    '404':
+      description: Room not found
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/notFound.yaml'
+    '409':
+      description: Conflict with existing room
+      content:
+        application/json:
+        schema:
+          $ref: '../spec/components/responses/conflict.yaml'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/internalError.yaml'
+
+delete:
+  tags:
+    - Rooms
+  summary: Delete room
+  description: Delete room by ID
+  responses:
+    '204':
+      description: Room deleted successfully
+    '404':
+      description: Room not found
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/notFound.yaml'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/responses/internalError.yaml'

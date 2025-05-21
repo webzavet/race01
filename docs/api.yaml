@@ -10,6 +10,14 @@ paths:
     $ref: './paths/Registration.yaml'
   /auth/login:
     $ref: './paths/Login.yaml'
+  /rooms:
+    $ref: './paths/CreateRoom.yaml'
+  /rooms/{roomName}:
+    $ref: './paths/Rooms.yaml'
+  /rooms/{roomName}/player:
+    $ref: './paths/Player.yaml'
+
+
 
 components:
   schemas:

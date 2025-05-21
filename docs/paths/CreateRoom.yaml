@@ -1,0 +1,36 @@
+post:
+  tags:
+    - Rooms
+  summary: Create room
+  description: Create room
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          $ref: '../spec/components/schemas/CreateRoom.yaml'
+  responses:
+    '201':
+      description: Room created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Room.yaml'
+    '400':
+      description: Invalid request body
+      content:
+          application/json:
+          schema:
+              $ref: '../spec/components/responses/badRequest.yaml'
+    '409':
+      description: Conflict with existing room
+      content:
+        application/json:
+        schema:
+          $ref: '../spec/components/responses/conflict.yaml'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+        schema:
+          $ref: '../spec/components/responses/internalError.yaml'
