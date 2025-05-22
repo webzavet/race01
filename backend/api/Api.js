@@ -12,6 +12,8 @@ import {
 } from "../modules/rooms/handlers.js";
 import config from "../tools/config/Config.js";
 import log from "../tools/logger/Logger.js";
+import {initWebSocket} from "../modules/game/ws.js";
+import * as http from "node:http";
 
 const router = express.Router();
 
@@ -19,6 +21,7 @@ export class Api {
     constructor() {
         this.app = express();
         this.server = null;
+        this.io = null;
 
         this.app.use(express.json());
 
@@ -48,8 +51,13 @@ export class Api {
     }
 
     start() {
-        this.server = this.app.listen(config.server.port, () =>
-            log.info(`API started on ${config.server.port}`));
+        this.server = http.createServer(this.app);
+        // 2) инициализируем WebSocket
+        this.io = initWebSocket(this.server);
+        // 3) запускаем оба (REST + WS) на одном порту
+        this.server.listen(config.server.port, () =>
+            log.info(`API+WS started on port ${config.server.port}`)
+        );
     }
 
     stop() {
