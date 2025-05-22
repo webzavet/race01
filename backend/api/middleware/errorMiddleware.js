@@ -34,13 +34,14 @@ export function errorMiddleware(err, req, res, next) {
     }
 
     // Логируем и саму ошибку, и её причину (cause), если есть
-    console.error(`Error: ${errorToHandle.message}`, errorToHandle.cause);
+    log.error(`Error: ${errorToHandle.message}`, errorToHandle.cause);
 
     // Формируем массив ошибок
     const payload = {
         errors: [
             {
                 code:   errorToHandle.code,
+                status: errorToHandle.status,
                 detail: errorToHandle.message,
             }
         ]

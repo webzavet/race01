@@ -17,20 +17,20 @@ post:
           schema:
             $ref: '../spec/components/schemas/Token.yaml'
     '409':
-      description: first password and second password do not match
+      description: Conflict
       content:
-        application/json:
+        application/vnd.api+json:
           schema:
-            $ref: '../spec/components/responses/conflict.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '404':
       description: User with this username does not exist
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/notFound.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '500':
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/internalError.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'

@@ -15,12 +15,12 @@ post:
       content:
         application/json:
           schema:
-            $ref: '../spec/components/schemas/Registration.yaml'
+            $ref: '../spec/components/schemas/Token.yaml'
     '409':
       description: User with this username already exists
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/conflict.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '500':
-      $ref: '../spec/components/responses/internalError.yaml'
+      $ref: '../spec/components/schemas/Errors.yaml'

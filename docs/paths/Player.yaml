@@ -15,25 +15,25 @@ post:
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/invalidParameter.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '404':
       description: Room not found
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/notFound.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '409':
       description: Conflict with existing room
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/conflict.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '500':
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/internalError.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
 
 delete:
   tags:
@@ -41,33 +41,29 @@ delete:
   summary: Leave room
   description: Leave room by ID
   responses:
-    '201':
+    '204':
       description: Room left successfully
-      content:
-        application/json:
-          schema:
-            $ref: '../spec/components/schemas/Room.yaml'
     '400':
       description: Invalid request body
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/invalidParameter.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '404':
       description: Room not found
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/notFound.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '409':
       description: Conflict with existing room
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/conflict.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '500':
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/internalError.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'

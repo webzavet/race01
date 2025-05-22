@@ -21,16 +21,16 @@ post:
       content:
         application/json:
           schema:
-              $ref: '../spec/components/responses/invalidParameter.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '409':
       description: Conflict with existing room
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/conflict.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
     '500':
       description: Internal server error
       content:
         application/json:
           schema:
-            $ref: '../spec/components/responses/internalError.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'
