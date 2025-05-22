@@ -67,6 +67,11 @@ export class Api {
                 if (err) return reject(err);
                 resolve();
             });
+
+            if (this.io) {
+                this.io.emit('serverShutdown', { message: 'Server is shutting down' });
+                this.io.disconnectSockets(true);
+            }
         });
     }
 }

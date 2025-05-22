@@ -20,6 +20,7 @@ export function initWebSocket(server) {
             log.warn('WS auth failed: auth token missing');
             return next(new Error('Unauthorized'));
         }
+
         let user;
         try {
             const raw = token.startsWith('Bearer ') ? token.split(' ')[1] : token;
@@ -28,8 +29,9 @@ export function initWebSocket(server) {
             log.warn('WS auth failed: invalid token');
             return next(new Error('Unauthorized'));
         }
+
         socket.data.user = user;
-        log.info('WS auth success', user.username);
+        log.info(`WS auth token: ${user.username}`);
         next();
     });
 
@@ -53,6 +55,11 @@ export function initWebSocket(server) {
             const room = io.sockets.adapter.rooms.get(roomID);
             const remaining = room ? room.size : 0;
             socket.to(roomID).emit('playerLeft', { username: socket.data.user.username });
+        });
+
+        socket.on('serverShutdown', ({ message }) => {
+            alert(message);
+            socket.disconnect();
         });
     });
 

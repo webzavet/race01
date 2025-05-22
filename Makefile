@@ -12,3 +12,10 @@ migrate-down:
 
 run-service:
 	@node index.js service run
+
+docs-gen:
+	@echo "📦 Bundling OpenAPI spec from $(API_SRC) → $(API_BUNDLED)…"
+	@swagger-cli bundle $(API_SRC) \
+		--outfile $(API_BUNDLED) \
+		--type yaml
+	@echo "✅ Bundled spec written to $(API_BUNDLED)"

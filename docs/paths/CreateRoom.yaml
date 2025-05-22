@@ -19,18 +19,18 @@ post:
     '400':
       description: Invalid request body
       content:
-          application/json:
+        application/json:
           schema:
-              $ref: '../spec/components/responses/badRequest.yaml'
+              $ref: '../spec/components/responses/invalidParameter.yaml'
     '409':
       description: Conflict with existing room
       content:
         application/json:
-        schema:
-          $ref: '../spec/components/responses/conflict.yaml'
+          schema:
+            $ref: '../spec/components/responses/conflict.yaml'
     '500':
       description: Internal server error
       content:
         application/json:
-        schema:
-          $ref: '../spec/components/responses/internalError.yaml'
+          schema:
+            $ref: '../spec/components/responses/internalError.yaml'
