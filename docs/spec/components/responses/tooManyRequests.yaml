@@ -1,5 +1,0 @@
-description: Too many requests
-content:
-  application/vnd.api+json:
-    schema:
-      $ref: '../schemas/Errors.yaml'

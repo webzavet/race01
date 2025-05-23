@@ -14,6 +14,7 @@ import config from "../tools/config/Config.js";
 import log from "../tools/logger/Logger.js";
 import {initWebSocket} from "../modules/game/ws.js";
 import * as http from "node:http";
+import {createCardHandler, deleteCardHandler, getCardHandler, getCardsHandler} from "../modules/cards/handlers.js";
 
 const router = express.Router();
 
@@ -30,6 +31,7 @@ export class Api {
             next();
         });
 
+        // AUTH
         const authRouter = express.Router();
         authRouter.post('/register', registerHandler);
         authRouter.post('/login',    loginHandler);
@@ -39,13 +41,22 @@ export class Api {
         const roomsRouter = express.Router();
         roomsRouter.use(authMiddleware);
         roomsRouter.post   ('/', createRoomHandler);
-        roomsRouter.get    ('/:roomName', getRoomHandler);    // читаем из params
+        roomsRouter.get    ('/:roomName', getRoomHandler);
         roomsRouter.patch  ('/:roomName',  closeRoomHandler);
         roomsRouter.delete ('/:roomName', deleteRoomHandler);
 
         roomsRouter.post   ('/:roomName/player',   joinRoomHandler);
         roomsRouter.delete ('/:roomName/player',  leaveRoomHandler);
         this.app.use('/rooms', roomsRouter);
+
+        // CARDS
+        const cardsRouter = express.Router();
+        cardsRouter.use(authMiddleware);
+        cardsRouter.get('/', getCardsHandler);
+        cardsRouter.post('/', createCardHandler);
+        cardsRouter.get('/:cardId', getCardHandler);
+        cardsRouter.delete('/:cardId', deleteCardHandler);
+        this.app.use('/cards', cardsRouter);
 
         this.app.use(errorMiddleware)
     }

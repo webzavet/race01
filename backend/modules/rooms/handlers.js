@@ -5,14 +5,13 @@ import config from "../../tools/config/Config.js";
 import log from "../../tools/logger/Logger.js";
 import {BadRequestError} from "../../tools/errors/AppError.js";
 
-const roomsDomain = new RoomsDomain(config);
+const roomsDomain = new RoomsDomain();
 
 export async function createRoomHandler(req, res, next) {
     try {
         const { name, password } = parseRoomCreate(req.body);
 
-        const roomDomain = new RoomsDomain();
-        const room = await roomDomain.createRoom(req.user.username, name, password);
+        const room = await roomsDomain.createRoom(req.user.username, name, password);
 
         log.info(`Room ${name} created by ${req.user.username}`);
         res.status(201).json(renderRoom(room));
@@ -23,8 +22,7 @@ export async function createRoomHandler(req, res, next) {
 
 export async function getRoomHandler(req, res, next) {
     try {
-        const roomDomain = new RoomsDomain();
-        const room = await roomDomain.getRoom(req.params.roomName);
+        const room = await roomsDomain.getRoom(req.params.roomName);
 
         log.info(`Room ${req.params.roomName} fetched`);
         res.status(200).json(renderRoom(room));
@@ -35,8 +33,7 @@ export async function getRoomHandler(req, res, next) {
 
 export async function closeRoomHandler(req, res, next) {
     try {
-        const roomDomain = new RoomsDomain();
-        const room = await roomDomain.closeRoom(req.params.roomName, req.user.username);
+        const room = await roomsDomain.closeRoom(req.params.roomName, req.user.username);
 
         log.info(`Room ${req.params.roomName} closed`);
         res.status(200).json(renderRoom(room));
@@ -47,8 +44,7 @@ export async function closeRoomHandler(req, res, next) {
 
 export async function deleteRoomHandler(req, res, next) {
     try {
-        const roomDomain = new RoomsDomain();
-        await roomDomain.deleteRoom(req.params.roomName, req.user.username);
+        await roomsDomain.deleteRoom(req.params.roomName, req.user.username);
 
         log.info(`Room ${req.params.roomName} deleted`);
         res.status(204).end();
@@ -65,8 +61,7 @@ export async function joinRoomHandler(req, res, next) {
             new BadRequestError("Room name is required");
         }
 
-        const roomDomain = new RoomsDomain();
-        const room = await roomDomain.joinRoom(req.user.username, req.params.roomName, password);
+        const room = await roomsDomain.joinRoom(req.user.username, req.params.roomName, password);
 
         log.info(`User ${req.user.username} joined room ${req.params.roomName}`);
         res.status(200).json(renderRoom(room));
@@ -77,8 +72,7 @@ export async function joinRoomHandler(req, res, next) {
 
 export async function leaveRoomHandler(req, res, next) {
     try {
-        const roomDomain = new RoomsDomain();
-        await roomDomain.leaveRoom(req.user.username, req.params.roomName);
+        await roomsDomain.leaveRoom(req.user.username, req.params.roomName);
 
         log.info(`User ${req.user.username} leave room ${req.params.roomName}`);
         res.status(204).end()

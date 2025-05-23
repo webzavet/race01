@@ -1,0 +1,57 @@
+type: object
+required:
+  - id
+  - type
+  - attributes
+properties:
+  id:
+    type: string
+    example: 9bfe698b-e2c5-4d25-8c70-6e18026358e1
+    description: The unique uuid identifier for the card.
+  type:
+    type: string
+    enum: [card]
+    description: The type of the resource.
+  attributes:
+    type: object
+    required:
+      - name
+      - icon
+      - descr
+      - attack
+      - defense
+      - cost
+      - attribute
+    properties:
+      name:
+        type: string
+        example: Fireball
+        description: The name of the card.
+      icon:
+        type: string
+        example: fireball.png
+        description: The link to icon.
+      sound:
+        type: string
+        example: fireball.mp3
+        description: The link to sound.
+      descr:
+        type: string
+        example: A powerful fire spell.
+        description: The description of the card.
+      attack:
+        type: integer
+        example: 50
+        description: The attack value of the card.
+      defense:
+        type: integer
+        example: 30
+        description: The defense value of the card.
+      cost:
+        type: integer
+        example: 5
+        description: The cost to play the card.
+      attribute:
+        type: string
+        enum: [fire, water, earth, air]
+        description: The attribute of the card.

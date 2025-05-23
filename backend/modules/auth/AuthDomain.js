@@ -51,7 +51,7 @@ export default class AuthDomain {
             throw new UserNotFoundError('User not found');
         }
 
-        const isPasswordValid = await  PasswordHasher.verifyPassword(password, user.password_hash);
+        const isPasswordValid = await PasswordHasher.verifyPassword(password, user.password_hash);
         if (!isPasswordValid) {
             throw new InvalidPasswordError('Invalid password');
         }

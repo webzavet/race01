@@ -9,10 +9,10 @@ export default class CardsRepo {
         name,
         icon = null,
         descr,
-        damage,
+        attack,
         defence,
-        attribute,
         cost,
+        attribute,
         createdAt = new Date(),
     }) {
         const card = {
@@ -20,10 +20,10 @@ export default class CardsRepo {
             name:       name,
             icon:       icon,
             descr:      descr,
-            damage:     damage,
+            attack:     attack,
             defence:    defence,
-            attribute:  attribute,
             cost:       cost,
+            attribute:  attribute,
             created_at: createdAt,
         };
         await this.builder.insert(card);
@@ -58,12 +58,6 @@ export default class CardsRepo {
         return this;
     }
 
-    filterId(id) {
-        this.builder = this.builder.where('id', id);
-        this.counter = this.counter.where('id', id);
-        return this;
-    }
-
     filterName(name) {
         this.builder = this.builder.where('name', name);
         this.counter = this.counter.where('name', name);
@@ -82,9 +76,21 @@ export default class CardsRepo {
         return this;
     }
 
-    filterCostBetween(min, max) {
-        this.builder = this.builder.whereBetween('cost', [min, max]);
-        this.counter = this.counter.whereBetween('cost', [min, max]);
+    filterAttack(attack) {
+        this.builder = this.builder.where('attack', attack);
+        this.counter = this.counter.where('attack', attack);
+        return this;
+    }
+
+    filterDefence(defence) {
+        this.builder = this.builder.where('defence', defence);
+        this.counter = this.counter.where('defence', defence);
+        return this;
+    }
+
+    filterById(id) {
+        this.builder = this.builder.where('id', id);
+        this.counter = this.counter.where('id', id);
         return this;
     }
 }

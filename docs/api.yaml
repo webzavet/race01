@@ -16,6 +16,10 @@ paths:
     $ref: './paths/Rooms.yaml'
   /rooms/{roomName}/player:
     $ref: './paths/Player.yaml'
+  /cards:
+    $ref: './paths/Cards.yaml'
+  /cards/{cardId}:
+    $ref: './paths/Card.yaml'
 
 
 

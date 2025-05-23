@@ -1,0 +1,57 @@
+post:
+  tags:
+    - Cards
+  summary: Create card
+  description: Create a new card
+  requestBody:
+      required: true
+      content:
+      application/json:
+          schema:
+          $ref: '../spec/components/schemas/CardCreate.yaml'
+  responses:
+    '201':
+      description: Card created successfully
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Card.yaml'
+    '400':
+      description: Invalid request body
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Errors.yaml'
+    '409':
+      description: Conflict with existing card
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Errors.yaml'
+    '500':
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '../spec/components/schemas/Errors.yaml'
+
+get:
+  tags:
+      - Cards
+  summary: Get all cards
+  description: Retrieve all cards
+  responses:
+    '201':
+      description: Cards retrieved successfully
+      content:
+          application/json:
+          schema:
+              type: array
+              items:
+              $ref: '../spec/components/schemas/Card.yaml'
+    '500':
+      description: Internal server error
+      content:
+          application/json:
+          schema:
+              $ref: '../spec/components/schemas/Errors.yaml'

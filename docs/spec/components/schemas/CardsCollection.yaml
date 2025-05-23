@@ -1,0 +1,18 @@
+type: object
+required:
+  - data
+properties:
+    data:
+      type: object
+      required:
+        - type
+        - attributes
+      properties:
+        type:
+          type: string
+          enum: [cards_collection]
+          description: The type of the resource.
+        attributes:
+          type: array
+          item:
+            $ref: "./CardData.yaml"
