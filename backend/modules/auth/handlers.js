@@ -1,11 +1,11 @@
 // backend/api/rest/handlers/auth.js
-import AuthDomain from '../../modules/auth/AuthDomain.js';
+import Auth from './Auth.js';
 import { parseRegister, parseLogin } from './requests.js';
 import { renderTokenResponse } from './responses.js';
 import config from "../../tools/config/Config.js";
 import log from "../../tools/logger/Logger.js";
 
-const authDomain = new AuthDomain(config);
+const authDomain = new Auth(config);
 
 /**
  * POST /auth/register

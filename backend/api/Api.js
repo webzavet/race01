@@ -12,9 +12,9 @@ import {
 } from "../modules/rooms/handlers.js";
 import config from "../tools/config/Config.js";
 import log from "../tools/logger/Logger.js";
-import {initWebSocket} from "../modules/game/ws.js";
+import {initWebSocket} from "../modules/sessions/ws.js";
 import * as http from "node:http";
-import {createCardHandler, deleteCardHandler, getCardHandler, getCardsHandler} from "../modules/cards/handlers.js";
+import {createCardHandler, deleteCardHandler, getCardHandler, getCardsHandler} from "../modules/wiki/handlers.js";
 
 const router = express.Router();
 

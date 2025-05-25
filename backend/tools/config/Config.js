@@ -29,6 +29,11 @@ class Config {
                 user: raw.database.sql.user,
                 password: raw.database.sql.password,
                 name: raw.database.sql.name,
+            },
+            redis: {
+                host: raw.database.redis.host,
+                port: raw.database.redis.port,
+                password: raw.database.redis.password,
             }
         };
 

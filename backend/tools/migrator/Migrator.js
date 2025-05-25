@@ -1,8 +1,8 @@
 import fs from 'fs';
 import path from 'path';
-import { database } from '../../data/Database.js';
+import { database } from '../../data/sql/Database.js';
 
-const MIGRATIONS_DIR = path.resolve(process.cwd(), 'backend', 'data', 'migration');
+const MIGRATIONS_DIR = path.resolve(process.cwd(), 'backend', 'data', 'sql', 'migration');
 
 class Migrator {
     static async up() {

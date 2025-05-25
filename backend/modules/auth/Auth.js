@@ -1,10 +1,10 @@
-import {database} from "../../data/Database.js";
+import {database} from "../../data/sql/Database.js";
 import PasswordHasher from '../../tools/password_hasher/PasswordHasher.js';
 import TokenManager from '../../tools/tokens/TokenManager.js';
 import {InvalidPasswordError, PasswordMismatchError, UserAlreadyExistsError, UserNotFoundError} from "./errors.js";
 import config from "../../tools/config/Config.js";
 
-export default class AuthDomain {
+export default class Auth {
     constructor() {
         this.db = database;
         this.tokenManager = new TokenManager();

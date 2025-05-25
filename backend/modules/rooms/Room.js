@@ -1,4 +1,4 @@
-import {database} from "../../data/Database.js";
+import {database} from "../../data/sql/Database.js";
 import config from "../../tools/config/Config.js";
 import PasswordHasher from "../../tools/password_hasher/PasswordHasher.js";
 

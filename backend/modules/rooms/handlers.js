@@ -1,4 +1,4 @@
-import RoomsDomain from "./RoomDomain.js";
+import RoomsDomain from "./Room.js";
 import { parseRoomCreate, parseRoomJoin } from "./requests.js";
 import { renderRoom } from "./responses.js";
 import config from "../../tools/config/Config.js";

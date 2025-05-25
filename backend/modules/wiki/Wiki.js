@@ -1,4 +1,4 @@
-import {database} from "../../data/Database.js";
+import {database} from "../../data/sql/Database.js";
 import PasswordHasher from '../../tools/password_hasher/PasswordHasher.js';
 import TokenManager from '../../tools/tokens/TokenManager.js';
 import config from "../../tools/config/Config.js";
@@ -27,7 +27,7 @@ function CreateCardsModelArray(cardsFromDb) {
     return cardsFromDb.map(CreateCardsModel);
 }
 
-export default class CardsDomain {
+export default class Wiki {
     constructor() {
         this.db = database;
         this.config = config;
@@ -123,5 +123,4 @@ export default class CardsDomain {
 
         await this.db.cards().filterById(id).delete();
     }
-
 }

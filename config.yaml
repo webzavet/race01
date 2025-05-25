@@ -19,6 +19,12 @@ database:
     user: "root"
     password: "password"
     name: "race01"
+  redis:
+    addr: "localhost:7200"
+    password: ""
+    db: 0
+    lifetime: 15 #minutes
+
 
 oauth:
   google:

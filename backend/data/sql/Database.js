@@ -4,7 +4,7 @@ import RoomsRepo   from './RoomsRepo.js';
 import UsersRepo   from './UsersRepo.js';
 import CardsRepo   from './CardsRepo.js';
 import PlayersRepo from './PlayersRepo.js';
-import config from '../tools/config/Config.js';
+import config from '../../tools/config/Config.js';
 
 export class Database {
     constructor() {

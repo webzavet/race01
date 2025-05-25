@@ -1,4 +1,4 @@
-import config from "../tools/config/Config.js";
+import config from "../../tools/config/Config.js";
 
 export default class UsersRepo {
     constructor(builder = null, counter = null) {

@@ -1,11 +1,11 @@
-import CardsDomain from "./CardsDomain.js";
+import Wiki from "./Wiki.js";
 import config from "../../tools/config/Config.js";
 import log from "../../tools/logger/Logger.js";
 import {BadRequestError} from "../../tools/errors/AppError.js";
 import {parseCreateCard} from "./requests.js";
 import {renderCard, renderCardsCollection} from "./responses.js";
 
-const cardsDomain = new CardsDomain();
+const cardsDomain = new Wiki();
 
 export async function createCardHandler(req, res, next) {
     try {
