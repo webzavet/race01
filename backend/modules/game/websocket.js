@@ -6,9 +6,6 @@ import config from '../../tools/config/Config.js';
 import {attackStage, defenseStage, fightingStage, Game} from './Game.js';
 import { database } from "../../data/sql/Database.js";
 
-/* ------------------------------------------------------------------
- * WebSocket gateway rewritten as a class
- * ----------------------------------------------------------------*/
 export default class WebSocketGateway {
     constructor(server) {
         this.io = new IOServer(server, {
@@ -287,7 +284,277 @@ export default class WebSocketGateway {
         }
     }
 
-
+    /**
+     * @method _emitGameState
+     * @description send full data about game session
+     * @server → client
+     * @event gameState
+     * @payload example looks like this:
+     *{
+     *   "round": 1,
+     *   "stage": "attack",
+     *   "players": {
+     *     "attack": {
+     *       "username": "first",
+     *       "health": 20,
+     *       "elixir": 1,
+     *       "hand": [
+     *         {
+     *           "id": "6",
+     *           "name": "Kron",
+     *           "icon": "media/cards/icons/kron.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A guardian of the ancient ruins, strong and resilient.",
+     *           "attack": 7,
+     *           "defence": 2,
+     *           "cost": 3,
+     *           "attribute": "intellect",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         },
+     *         {
+     *           "id": "13",
+     *           "name": "Cira",
+     *           "icon": "media/cards/icons/cira.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A healer who mends the wounds of allies.",
+     *           "attack": 1,
+     *           "defence": 5,
+     *           "cost": 2,
+     *           "attribute": "strange",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         },
+     *         {
+     *           "id": "1",
+     *           "name": "Ekh",
+     *           "icon": "media/cards/icons/ekh.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A mysterious creature with a strange aura.",
+     *           "attack": 5,
+     *           "defence": 3,
+     *           "cost": 2,
+     *           "attribute": "strange",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         },
+     *         {
+     *           "id": "15",
+     *           "name": "Elysia",
+     *           "icon": "media/cards/icons/elysia.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A serene spirit that brings peace to the battlefield.",
+     *           "attack": 2,
+     *           "defence": 4,
+     *           "cost": 1,
+     *           "attribute": "intellect",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         }
+     *       ],
+     *       "table": {
+     *         "id": "2",
+     *         "name": "Zara",
+     *         "icon": "media/cards/icons/zara.png",
+     *         "sound": "media/cards/sounds/ekh.mp3",
+     *         "descr": "A swift and agile warrior from the northern tribes.",
+     *         "attack": 4,
+     *         "defence": 2,
+     *         "cost": 3,
+     *         "attribute": "agility",
+     *         "created_at": "2025-05-26T09:57:42.000Z"
+     *       }
+     *     },
+     *     "defense": {
+     *       "username": "second",
+     *       "health": 22,
+     *       "elixir": 0,
+     *       "hand": [
+     *         {
+     *           "id": "3",
+     *           "name": "Orin",
+     *           "icon": "media/cards/icons/orin.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A wise mage with powerful spells.",
+     *           "attack": 3,
+     *           "defence": 4,
+     *           "cost": 5,
+     *           "attribute": "intellect",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         },
+     *         {
+     *           "id": "11",
+     *           "name": "Astra",
+     *           "icon": "media/cards/icons/astra.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A celestial being that guides lost souls.",
+     *           "attack": 2,
+     *           "defence": 6,
+     *           "cost": 1,
+     *           "attribute": "agility",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         },
+     *         {
+     *           "id": "4",
+     *           "name": "Thorn",
+     *           "icon": "media/cards/icons/thorn.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A fierce beast with sharp claws.",
+     *           "attack": 6,
+     *           "defence": 1,
+     *           "cost": 4,
+     *           "attribute": "strange",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         },
+     *         {
+     *           "id": "9",
+     *           "name": "Grom",
+     *           "icon": "media/cards/icons/grom.png",
+     *           "sound": "media/cards/sounds/ekh.mp3",
+     *           "descr": "A hulking brute with unmatched strength.",
+     *           "attack": 8,
+     *           "defence": 0,
+     *           "cost": 5,
+     *           "attribute": "intellect",
+     *           "created_at": "2025-05-26T09:57:42.000Z"
+     *         }
+     *       ],
+     *       "table": {
+     *         "id": "17",
+     *         "name": "Griff",
+     *         "icon": "media/cards/icons/griff.png",
+     *         "sound": "media/cards/sounds/ekh.mp3",
+     *         "descr": "A majestic creature that soars through the skies.",
+     *         "attack": 5,
+     *         "defence": 2,
+     *         "cost": 4,
+     *         "attribute": "agility",
+     *         "created_at": "2025-05-26T09:57:42.000Z"
+     *       }
+     *     }
+     *   },
+     *   "deck": [
+     *     {
+     *       "id": "10",
+     *       "name": "Nix",
+     *       "icon": "media/cards/icons/nix.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A shadowy figure that moves unseen.",
+     *       "attack": 4,
+     *       "defence": 4,
+     *       "cost": 2,
+     *       "attribute": "strange",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "18",
+     *       "name": "Hawk",
+     *       "icon": "media/cards/icons/hawk.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A keen-eyed hunter with unmatched precision.",
+     *       "attack": 3,
+     *       "defence": 5,
+     *       "cost": 2,
+     *       "attribute": "intellect",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "16",
+     *       "name": "Frost",
+     *       "icon": "media/cards/icons/frost.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "An icy elemental that freezes its foes.",
+     *       "attack": 4,
+     *       "defence": 3,
+     *       "cost": 3,
+     *       "attribute": "strange",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "7",
+     *       "name": "Vex",
+     *       "icon": "media/cards/icons/vex.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A trickster spirit that confuses its enemies.",
+     *       "attack": 3,
+     *       "defence": 3,
+     *       "cost": 2,
+     *       "attribute": "strange",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "20",
+     *       "name": "Jade",
+     *       "icon": "media/cards/icons/jade.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A mystical guardian with a heart of stone.",
+     *       "attack": 4,
+     *       "defence": 4,
+     *       "cost": 3,
+     *       "attribute": "agility",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "12",
+     *       "name": "Bram",
+     *       "icon": "media/cards/icons/bram.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A stalwart defender with an unbreakable shield.",
+     *       "attack": 3,
+     *       "defence": 7,
+     *       "cost": 3,
+     *       "attribute": "intellect",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "5",
+     *       "name": "Luna",
+     *       "icon": "media/cards/icons/luna.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A mystical being that controls the tides.",
+     *       "attack": 2,
+     *       "defence": 5,
+     *       "cost": 1,
+     *       "attribute": "agility",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "14",
+     *       "name": "Drax",
+     *       "icon": "media/cards/icons/drax.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A relentless warrior with a thirst for battle.",
+     *       "attack": 6,
+     *       "defence": 2,
+     *       "cost": 4,
+     *       "attribute": "agility",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "19",
+     *       "name": "Ivy",
+     *       "icon": "media/cards/icons/ivy.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A creeping vine that ensnares its enemies.",
+     *       "attack": 2,
+     *       "defence": 6,
+     *       "cost": 1,
+     *       "attribute": "strange",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     },
+     *     {
+     *       "id": "8",
+     *       "name": "Fira",
+     *       "icon": "media/cards/icons/fira.png",
+     *       "sound": "media/cards/sounds/ekh.mp3",
+     *       "descr": "A fiery elemental that burns with passion.",
+     *       "attack": 5,
+     *       "defence": 1,
+     *       "cost": 4,
+     *       "attribute": "agility",
+     *       "created_at": "2025-05-26T09:57:42.000Z"
+     *     }
+     *   ],
+     *   "discard": [],
+     *   "winner": []
+     * }
+     */
     async _emitGameState(roomID) {
         const session = await this.game.getGame(roomID);
         this.io.to(roomID).emit('gameState', session);
