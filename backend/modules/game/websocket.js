@@ -24,6 +24,14 @@ export default class WebSocketGateway {
     }
 
     /* ------------- auth middleware ------------- */
+    // {
+    //     "transports": ["websocket"],
+    //     "auth": {
+    //         "token": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InNlY29uZCIsImlhdCI6MTc0ODIzNTE5NCwiZXhwIjoxNzUwOTEzNTk0fQ.SUOEH7OGjXvzr3dToPxN33LmPTG4efzfKAz2rQ2jltA"
+    //     }
+    // }
+    // So u need to send json body like this in the request to connect to the WebSocket server.
+    // This method sets up the authentication middleware for WebSocket connections.
     _setupAuth() {
         this.io.use((socket, next) => {
             try {
@@ -57,19 +65,47 @@ export default class WebSocketGateway {
 
                 roomID = player.room;
                 socket.join(roomID);
+
+                // ── SERVER → CLIENT: notify about player connection ──
+                // event: 'userConnect'
+                // payload: { username: string }
                 this.io.to(roomID).emit('userConnect', {username: player.username});
 
                 const count = this.io.sockets.adapter.rooms.get(roomID).size;
                 if (count === 1) {
+
+                    // ── SERVER → CLIENT (attacker only)
+                    // event: 'waitingOpponent'
+                    // payload: { username: string }
                     socket.to(roomID).emit('waitingOpponent', {username: player.username});
                 } else if (count === 2) {
+
+                    // ── SERVER → CLIENT (both)
+                    // event: 'startGame'
+                    // payload: { id: string }
                     const session = await this.game.startGame(roomID);
                     this.io.to(roomID).emit('startGame', {id: roomID});
+
+                    // full sessions data go to functions and see for how it works
                     await this._emitGameState(roomID);
                 } else {
                     throw new wsError('Room is full');
                 }
 
+                /**
+                 * @event playCardAttack
+                 * @client → server
+                 * @payload { object } data
+                 * @payload { string|number } data.cardId — ID card that attacker plays
+                 * @throws error if cardId missing or invalid turn
+                 *
+                 * @server → client emits:
+                 *   cardPlayed   { side: 'attack', card: GameCard, nextStage: string }
+                 *   battleResult { diff: number }                (when both played)
+                 *   hpUpdate     { attackHP: number, defenseHP: number }
+                 *   handingCards { round: number, hands: { attack: GameCard[], defense: GameCard[] } }
+                 *   gameState    { full GameSession snapshot }
+                 */
                 /* ------- gameplay events ------- */
                 socket.on('playCardAttack', async (data) => {
                     const cardId = data.cardId;
@@ -78,9 +114,26 @@ export default class WebSocketGateway {
                         return;
                     }
                     await this._handlePlayCard(roomID, attackStage, cardId);
+
+                    // full sessions data go to functions and see for how it works
                     await this._emitGameState(roomID);
                 });
 
+
+                /**
+                 * @event playCardDefense
+                 * @client → server
+                 * @payload { object } data
+                 * @payload { string|number } data.cardId — ID card that defender plays
+                 * @throws error if cardId missing or invalid turn
+                 *
+                 * @server → client emits:
+                 *   cardPlayed   { side: 'defense', card: GameCard, nextStage: string }
+                 *   battleResult { diff: number }
+                 *   hpUpdate     { attackHP: number, defenseHP: number }
+                 *   handingCards { round: number, hands: { attack: GameCard[], defense: GameCard[] } }
+                 *   gameState    { full GameSession snapshot }
+                 */
                 socket.on('playCardDefense', async (data) => {
                     const cardId = data.cardId;
                     if (!cardId) {
@@ -88,26 +141,57 @@ export default class WebSocketGateway {
                         return;
                     }
                     await this._handlePlayCard(roomID, defenseStage, cardId);
+
+                    // full sessions data go to functions and see for how it works
                     await this._emitGameState(roomID);
                 });
 
+                /**
+                 * @event endGame
+                 * @client → server
+                 * @payload none (optional { reason: string })
+                 *
+                 * @server → client emits:
+                 *   endGame { by: string, winner?: string[], reason?: string }
+                 *   gameState { full GameSession snapshot }
+                 */
                 socket.on('endGame', async () => {
                     await this.game.endGame(roomID);
                     this.io.to(roomID).emit('endGame', {by: user.username});
+
+                    // full sessions data go to functions and see for how it works
                     await this._emitGameState(roomID);
                     this.io.socketsLeave(roomID);
                 });
 
+                /**
+                 * @event serverShutdown
+                 * @client → server
+                 * @payload { message: string }
+                 *
+                 * @server → client emits:
+                 *   endGame { by: 'server', reason: 'shutdown', message: string }
+                 */
                 socket.on('serverShutdown', () => {
                     socket.emit('endGame', {by: 'server', reason: 'shutdown'});
                     socket.disconnect();
                 });
 
+                /**
+                 * @event error
+                 * @server → client
+                 * @payload { message: string }
+                 */
                 socket.on('error', err => {
                     log.error(err);
                     socket.emit('error', {message: err.message || 'Unknown error'});
                 });
 
+                /**
+                 * @event disconnect
+                 * @server → client
+                 * @payload { username: string }
+                 */
                 socket.on('disconnect', () => {
                     this.io.to(roomID).emit('userDisconnect', {username: user.username});
                 });
@@ -122,47 +206,68 @@ export default class WebSocketGateway {
     /* ------------ обновлённый метод ------------ */
     async _handlePlayCard(roomID, side, cardId) {
         try {
-            // 1. кладём карту на стол
             const card    = await this.game.addCardToTable(roomID, side, cardId);
             const session = await this.game.getGame(roomID);
 
+            // ── SERVER → CLIENT
+            // event: 'cardPlayed'
+            // payload: { side: 'attack'|'defense', card: GameCard, nextStage: string }
             this.io.to(roomID).emit('cardPlayed', {
                 side,
                 card,
-                nextStage: session.stage           // 'defense' или 'fighting'
             });
+
+            // full sessions data go to functions and see for how it works
             await this._emitGameState(roomID);
 
-            // 2. если ещё не фаза боя — ждём карту соперника
+            // if it`s not a fighting stage, we just return
             if (session.stage !== fightingStage) return;
 
-            // 3. бой
+            // ── SERVER → CLIENT
+            // event: 'battleResult'
+            // payload: { diff: number }
             const diff = await this.game.cardBattle(roomID);
             this.io.to(roomID).emit('battleResult', { diff });
+
+            // full sessions data go to functions and see for how it works
             await this._emitGameState(roomID);
 
-            // await this.game.StartRound(roomID);
-
-            // 4. снимаем здоровье у защитника
+            // ── SERVER → CLIENT
+            // event: 'hpUpdate'
+            // payload: { attackHP: number, defenseHP: number
             await this.game.removeHealthFromPlayer(roomID, defenseStage, diff);
+
+            // helper function to get updated game state (nothing sends to client)
             await this.game.startRound(roomID);
+
             const updated = await this.game.getGame(roomID);
+
+            // ── SERVER → CLIENT
+            // event: 'hpUpdate'
+            // payload: { attackHP: number, defenseHP: number }
             this.io.to(roomID).emit('hpUpdate', {
                 attackHP:  updated.players.attack.health,
                 defenseHP: updated.players.defense.health
             });
 
+            // full sessions data go to functions and see for how it works
             await this._emitGameState(roomID);
 
-            // 5. проверяем победителя
             if (updated.winner.length) {
                 const reason = updated.winner.length === 2 ? 'draw' : 'player defeated';
+
+                // ── SERVER → CLIENT
+                // event: 'endGame'
+                // payload: { winner: string[], reason: string }
                 this.io.to(roomID).emit('endGame', { winner: updated.winner, reason });
+
+                // full sessions data go to functions and see for how it works
                 await this._emitGameState(roomID);
                 return this.io.socketsLeave(roomID);
             }
 
-            // 6. раздаём новые карты
+
+            // helper function to hand out new cards (nothing sends to client)
             await this.game.handingCards(roomID);
             const next = await this.game.getGame(roomID);
             this.io.to(roomID).emit('handingCards', {
@@ -173,6 +278,7 @@ export default class WebSocketGateway {
                 }
             });
 
+            // full sessions data go to functions and see for how it works
             await this._emitGameState(roomID);
 
         } catch (err) {
@@ -180,6 +286,7 @@ export default class WebSocketGateway {
             this.io.to(roomID).emit('error', { message: err.message || 'Unknown play card error' });
         }
     }
+
 
     async _emitGameState(roomID) {
         const session = await this.game.getGame(roomID);
