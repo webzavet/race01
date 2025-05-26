@@ -180,7 +180,6 @@ export default class RoomsDomain {
             throw new PlayerAlreadyInRoomError('Player already in a room');
         }
 
-
         let players = await this.db.players().filterRoom(roomID).count();
         if (players >= 2) {
             throw new RoomIsFullError('Room is full');

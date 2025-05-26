@@ -1,8 +1,6 @@
 // backend/data/SessionStore.js
-const AsyncLock = require('async-lock');
 
 let example =  {
-    room: "room",
     round: 1,
     stage: "attack", //defence, //fight
     condition: "playing", //waiting
@@ -52,32 +50,31 @@ class SessionStore {
     constructor() {
         /** @private Map<sessionId,string> */
         this._sessions = new Map();
-        /** @private */
-        this._lock = new AsyncLock();
     }
 
     /* ─────────────────────── базовые CRUD ─────────────────────── */
-    async set(sessionId, session) {
-        await this._lock.acquire(sessionId, () => {
-            this._sessions.set(sessionId, session);
-        });
+    async set(roomId, session) {
+        this._sessions.set(roomId, session);
     }
 
-    async get(sessionId) {
-        return this._lock.acquire(sessionId, () => {
-            return this._sessions.get(sessionId) || null;
-        });
+    async get(roomId) {
+        return this._sessions.get(roomId) || null;
     }
 
-    async getCopy(sessionId) {
-        return this._lock.acquire(sessionId, () => {
-            const s = this._sessions.get(sessionId);
-            return s ? JSON.parse(JSON.stringify(s)) : null;
-        });
+    async getCopy(roomId) {
+        const s = this._sessions.get(roomId)
+        return s ? JSON.parse(JSON.stringify(s)) : null;
     }
 
-    async delete(sessionId) {
-        await this._lock.acquire(sessionId, () => this._sessions.delete(sessionId));
+    async delete(roomId) {
+        await this._lock.acquire(roomId, () => this._sessions.delete(roomId));
+    }
+
+    async create(roomId, session) {
+        if (this._sessions.has(roomId)) {
+            throw new Error(`Session ${roomId} already exists`);
+        }
+        this._sessions.set(roomId, session);
     }
 
     /** Частичное обновление по строковому пути. */

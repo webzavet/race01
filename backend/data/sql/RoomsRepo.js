@@ -11,7 +11,7 @@ export default class RoomsRepo {
          createdAt = new Date()
     }) {
         const room = {
-            name: id,
+            id: id,
             password_hash: passHash,
             status: status,
             created_at: createdAt

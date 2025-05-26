@@ -6,6 +6,9 @@ export const defenseStage = 'defense';
 export const fightingStage= 'fighting';
 export const handingStage = 'handing';
 
+export const DefenceSide = 'defense';
+export const AttackSide = 'attack';
+
 export const waitingCond = 'waiting';
 export const playingCond = 'playing';
 
@@ -19,10 +22,17 @@ export class Game {
         this.database = database;
     }
 
-    async createGame({player1, player2, roomName}) {
+    async startGame(roomID) {
+        const players = await this.database.players().filterRoom(roomID).select();
+        if (!players || players.length !== 2) {
+            throw new Error('Not enough players to start the game');
+        }
+        let player1 = players[0].username;
+        let player2 = players[1].username;
+
         let cards = await this.database.cards().select();
-        if (!cards || cards.length < 19) {
-            throw new Error('Not enough cards in the database');
+        if (!cards || cards.length < 8) {
+            throw new Error('Not enough cards to start the game');
         }
 
         function HoIsTheFirst(player1, player2) {
@@ -31,7 +41,7 @@ export class Game {
                 : [player2, player1];
         }
 
-        cards = ShuffleCards(cards);
+        cards = shuffleCards(cards);
 
         const player1Hand = cards.slice(0, 4);
         const player2Hand = cards.slice(4, 8);
@@ -40,29 +50,26 @@ export class Game {
 
         [player1, player2] = HoIsTheFirst(player1, player2);
 
-        const sessionId = uuidv4();
-
         const gameSession = {
-            room: roomName,
             round: 1,
-            stage: attackTurn,
-            condition: waiting,
+            stage: attackStage,
+            condition: playingCond,
 
             players: {
                 attack: {
                     username: player1,
                     health: 20,
-                    elixir: 0,
+                    elixir: 4,
                     hand: player1Hand,
-                    table: []
+                    table: {}
                 },
 
                 defense: {
                     username: player2,
                     health: 20,
-                    elixir: 0,
+                    elixir: 4,
                     hand: player2Hand,
-                    table: []
+                    table: {}
                 }
             },
 
@@ -70,41 +77,25 @@ export class Game {
 
             discard: [],
 
-            timer: {
-                duration: 30,
-            }
-        };
+            winner: [],
+        }
 
-        await this.sessions.set(sessionId, gameSession);
+        await this.sessions.set(roomID, gameSession);
 
-        return [sessionId, gameSession];
+        return gameSession;
     }
 
-    async startGame(sessionId) {
-        const session = await this.sessions.getCopy(sessionId);
+    async endGame(roomID) {
+        const session = await this.sessions.getCopy(roomID);
         if (!session) {
             throw new Error('Session not found');
         }
 
-        session.condition = playingCond;
-        session.stage = handingStage;
-
-        await this.sessions.set(sessionId, session);
-
-        return session;
+        await this.sessions.delete(roomID, session);
     }
 
-    async endGame(sessionId) {
-        const session = await this.sessions.getCopy(sessionId);
-        if (!session) {
-            throw new Error('Session not found');
-        }
-
-        await this.sessions.delete(sessionId, session);
-    }
-
-    async getGame(sessionId) {
-        const session = await this.sessions.get(sessionId);
+    async getGame(roomID) {
+        const session = await this.sessions.get(roomID);
         if (!session) {
             throw new Error('Session not found');
         }
@@ -112,24 +103,24 @@ export class Game {
         return session;
     }
 
-    async getAttackSide(sessionId) {
-        const session = await this.sessions.get(sessionId);
+    async getAttackSide(roomID) {
+        const session = await this.sessions.get(roomID);
         if (!session) {
             throw new Error('Session not found');
         }
         return session.players.attack;
     }
 
-    async getDefenseSide(sessionId) {
-        const session = await this.sessions.get(sessionId);
+    async getDefenseSide(roomID) {
+        const session = await this.sessions.get(roomID);
         if (!session) {
             throw new Error('Session not found');
         }
         return session.players.defense;
     }
 
-    async StartRound(sessionId) {
-        const session = await this.sessions.getCopy(sessionId);
+    async StartRound(roomID) {
+        const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
         if (session.condition !== 'playing') {
@@ -145,38 +136,11 @@ export class Game {
         }
 
         session.round++;
-        await this.sessions.set(sessionId, session);
+        await this.sessions.set(roomID, session);
     }
 
-    async removeHealthFromPlayer(sessionId, side, health) {
-        const session = await this.sessions.getCopy(sessionId);
-        if (!session) throw new Error('Session not found');
-
-        if (session.condition !== 'playing') {
-            throw new Error('Game is not in progress');
-        }
-
-        if (session.stage !== handingStage) {
-            throw new Error('Game is not in the handing stage');
-        }
-
-        if (side !== 'attack' && side !== 'defense') {
-            throw new Error('Invalid side');
-        }
-
-        const player = session.players[side];
-        player.health -= health;
-
-        if (player.health <= 0) {
-            session.condition = 'finished';
-            session.winner.add(side);
-        }
-
-        await this.sessions.set(sessionId, session);
-    }
-
-    async handingCards(sessionId) {
-        const session = await this.sessions.getCopy(sessionId);
+    async handingCards(roomID) {
+        const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
         if (session.condition !== 'playing') {
@@ -210,11 +174,11 @@ export class Game {
 
         session.stage = attackStage
 
-        await this.sessions.set(sessionId, session);
+        await this.sessions.set(roomID, session);
     }
 
-    async addCardToTable(sessionId, side, cardId) {
-        const session = await this.sessions.getCopy(sessionId);
+    async addCardToTable(roomID, side, cardId) {
+        const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
         if (session.condition !== 'playing') {
@@ -252,13 +216,13 @@ export class Game {
         }
 
         // 8) Сохраняем обновлённую сессию
-        await this.sessions.set(sessionId, session);
+        await this.sessions.set(roomID, session);
 
         return card;
     }
 
-    async cardBattle(sessionId) {
-        let session = this.sessions.get(sessionId);
+    async cardBattle(roomID) {
+        let session = this.sessions.get(roomID);
 
         if (session.condition !== 'playing') {
             throw new Error('Game is not in progress');
@@ -277,11 +241,38 @@ export class Game {
 
         return defenceCard.defence * agilityIndex - attackCard.attack;
     }
+
+    async removeHealthFromPlayer(roomID, side, health) {
+        const session = await this.sessions.getCopy(roomID);
+        if (!session) throw new Error('Session not found');
+
+        if (session.condition !== 'playing') {
+            throw new Error('Game is not in progress');
+        }
+
+        if (session.stage !== handingStage) {
+            throw new Error('Game is not in the handing stage');
+        }
+
+        if (side !== 'attack' && side !== 'defense') {
+            throw new Error('Invalid side');
+        }
+
+        const player = session.players[side];
+        player.health -= health;
+
+        if (player.health <= 0) {
+            session.condition = 'finished';
+            session.winner.add(side);
+        }
+
+        await this.sessions.set(roomID, session);
+    }
 }
 
 //---- Supporting functions ----
 
-export function shuffleCards(cards) {
+function shuffleCards(cards) {
     const result = cards.slice();
     for (let i = result.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -290,7 +281,7 @@ export function shuffleCards(cards) {
     return result;
 }
 
-export function calculateAttributes(attack, defence) {
+function calculateAttributes(attack, defence) {
     if (attack === intellect && defence === strength) {
         return 1.5;
     }
@@ -317,3 +308,4 @@ export function calculateAttributes(attack, defence) {
 
     return 1;
 }
+

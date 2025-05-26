@@ -28,6 +28,6 @@ CREATE TABLE `rooms` (
 CREATE TABLE `players` (
     `id`         CHAR(36) PRIMARY KEY,
     `username`   VARCHAR(32) NOT NULL REFERENCES users(username),
-    `room`  VARCHAR(20) NOT NULL REFERENCES rooms(id),
+    `room`       VARCHAR(20) NOT NULL REFERENCES rooms(id),
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

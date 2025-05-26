@@ -15,7 +15,7 @@ import log from "../tools/logger/Logger.js";
 
 import * as http from "node:http";
 import {createCardHandler, deleteCardHandler, getCardHandler, getCardsHandler} from "../modules/wiki/handlers.js";
-import {initWebSocket} from "../modules/game/ws.js";
+import WebSocketGateway from "../modules/game/websocket.js";
 
 const router = express.Router();
 
@@ -65,7 +65,7 @@ export class Api {
     start() {
         this.server = http.createServer(this.app);
         // 2) инициализируем WebSocket
-        this.io = initWebSocket(this.server);
+        this.io = new WebSocketGateway(this.server);
         // 3) запускаем оба (REST + WS) на одном порту
         this.server.listen(config.server.port, () =>
             log.info(`API+WS started on port ${config.server.port}`)
