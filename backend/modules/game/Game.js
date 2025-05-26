@@ -127,8 +127,8 @@ export class Game {
             throw new Error('Game is not in the fighting stage');
         }
 
-        if (session.winner) {
-            return session.players[session.winner];
+        if (session.winner && session.winner.length > 0) {
+            return;
         }
 
         if (session.players.attack.elixir + 4 > 10) {
@@ -256,60 +256,70 @@ export class Game {
     }
 
     async cardBattle(roomID) {
-        let session = await this.sessions.get(roomID);
-
-        log.info(`Starting card battle in room ${roomID}`);
-
-        session.stage = fightingStage;
-
-        let attackCard = session.players.attack.table;
-        let defenceCard = session.players.defense.table;
-
-        log.info(`Attack card ${attackCard.id}`);
-        log.info(`Defence card ${defenceCard.id}`);
-
-        if (!attackCard || !defenceCard) {
-            throw new Error('Card not found');
-        }
-
-        const AttributesIndex = calculateAttributes(attackCard.attribute, defenceCard.attribute);
-
-        log.info(`Attributes index: ${AttributesIndex}`);
-
-        const res = defenceCard.defence * AttributesIndex - attackCard.attack
-
-        log.info(`Battle result: ${res}`);
-
-        return res;
-    }
-
-    async removeHealthFromPlayer(roomID, side, health) {
+        // 1) Получаем сессию
         const session = await this.sessions.getCopy(roomID);
-
-        log.info(`Removing health from player in room ${roomID}`);
-
         if (!session) throw new Error('Session not found');
 
+        // 2) Проверяем стадию
         if (session.stage !== fightingStage) {
-            throw new Error('Game is not in the fight stage');
+            throw new Error('Game is not in fighting stage');
         }
 
-        if (side !== 'attack' && side !== 'defense') {
-            throw new Error('Invalid side');
+        // 3) Берём карты
+        const attackCard  = session.players.attack.table;
+        const defenseCard = session.players.defense.table;
+        if (!attackCard || !defenseCard) {
+            throw new Error('Both attack and defense cards must be played');
         }
 
-        const player = session.players[side];
-        player.health -= health;
+        // 4) Считаем силы с учётом атрибутов
+        const attackPower  = attackCard.attack  * calculateAttributes(attackCard.attribute,  defenseCard.attribute);
+        const defensePower = defenseCard.defence * calculateAttributes(defenseCard.attribute, attackCard.attribute);
 
-        log.info(`Player ${player.username} health after battle: ${player.health}`);
-
-        if (player.health <= 0) {
-            session.winner.add(side);
+        // 5) Определяем победителя и урон
+        let winner = null;
+        let damage = 0;
+        if (attackPower > defensePower) {
+            winner = 'attack';
+            damage = Math.ceil(attackPower - defensePower);
+        } else if (defensePower > attackPower) {
+            winner = 'defense';
+            damage = Math.ceil(defensePower - attackPower);
         }
 
+        // 6) Снимаем здоровье у проигравшей стороны
+        if (winner) {
+            const loserSide = winner === 'attack' ? 'defense' : 'attack';
+            session.players[loserSide].health -= damage;
+
+            // Если здоровье упало ≤ 0 — финиш
+            if (session.players[loserSide].health <= 0) {
+                session.condition = 'finished';
+                session.winner = [winner];
+            }
+        }
+
+        const aCard = session.players.attack.table;
+        const dCard = session.players.defense.table;
+        session.discard.push(aCard, dCard);
+
+        session.players.attack.table  = {};
+        session.players.defense.table = {};
+
+        // 7) Обновляем стадию и сохраняем
+        session.stage = fightingStage; // на всякий случай
         await this.sessions.set(roomID, session);
+
+        // 8) Возвращаем результат
+        return {
+            winner,
+            damage,
+            hpAttack:  session.players.attack.health,
+            hpDefense: session.players.defense.health
+        };
     }
 }
+
 
 //---- Supporting functions ----
 

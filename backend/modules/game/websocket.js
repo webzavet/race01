@@ -229,11 +229,6 @@ export default class WebSocketGateway {
             // full sessions data go to functions and see for how it works
             await this._emitGameState(roomID);
 
-            // ── SERVER → CLIENT
-            // event: 'hpUpdate'
-            // payload: { attackHP: number, defenseHP: number
-            await this.game.removeHealthFromPlayer(roomID, defenseStage, diff);
-
             // helper function to get updated game state (nothing sends to client)
             await this.game.startRound(roomID);
 
