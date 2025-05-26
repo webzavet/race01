@@ -145,6 +145,12 @@ export class Game {
             session.players.defense.elixir = session.players.defense.elixir + 4;
         }
 
+        let attackerNew = session.players.defense;
+        let defenderNew = session.players.attack;
+
+        session.players.attack = attackerNew;
+        session.players.defense = defenderNew;
+
         session.round++;
         await this.sessions.set(roomID, session);
     }
