@@ -5,16 +5,14 @@ export default class RoomsRepo {
     }
 
     async insert({
-         name,
+         id,
          passHash,
-         maxPlayers = 2,
          status = 'waiting',
          createdAt = new Date()
     }) {
         const room = {
-            name: name,
+            name: id,
             password_hash: passHash,
-            max_players:  maxPlayers,
             status: status,
             created_at: createdAt
         };
@@ -47,9 +45,9 @@ export default class RoomsRepo {
         return this;
     }
 
-    filterName(name) {
-        this.builder  = this.builder.where('name', name);
-        this.counter  = this.counter.where('name', name);
+    filterID(name) {
+        this.builder  = this.builder.where('id', name);
+        this.counter  = this.counter.where('id', name);
         return this;
     }
 

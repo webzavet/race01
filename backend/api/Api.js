@@ -12,9 +12,10 @@ import {
 } from "../modules/rooms/handlers.js";
 import config from "../tools/config/Config.js";
 import log from "../tools/logger/Logger.js";
-import {initWebSocket} from "../modules/sessions/ws.js";
+
 import * as http from "node:http";
 import {createCardHandler, deleteCardHandler, getCardHandler, getCardsHandler} from "../modules/wiki/handlers.js";
+import {initWebSocket} from "../modules/game/ws.js";
 
 const router = express.Router();
 
@@ -41,12 +42,12 @@ export class Api {
         const roomsRouter = express.Router();
         roomsRouter.use(authMiddleware);
         roomsRouter.post   ('/', createRoomHandler);
-        roomsRouter.get    ('/:roomName', getRoomHandler);
-        roomsRouter.patch  ('/:roomName',  closeRoomHandler);
-        roomsRouter.delete ('/:roomName', deleteRoomHandler);
+        roomsRouter.get    ('/:roomID', getRoomHandler);
+        roomsRouter.patch  ('/:roomID',  closeRoomHandler);
+        roomsRouter.delete ('/:roomID', deleteRoomHandler);
 
-        roomsRouter.post   ('/:roomName/player',   joinRoomHandler);
-        roomsRouter.delete ('/:roomName/player',  leaveRoomHandler);
+        roomsRouter.post   ('/:roomID/player',   joinRoomHandler);
+        roomsRouter.delete ('/:roomID/player',  leaveRoomHandler);
         this.app.use('/rooms', roomsRouter);
 
         // CARDS

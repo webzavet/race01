@@ -20,7 +20,7 @@ export function parseRoomCreate(body) {
 
     const { password } = attributes;
 
-    return { name: id, password };
+    return { id: id, password };
 }
 
 export function parseRoomJoin(body) {
@@ -42,5 +42,5 @@ export function parseRoomJoin(body) {
 
     const { password } = attributes;
 
-    return { name: id, password };
+    return { id: id, password };
 }

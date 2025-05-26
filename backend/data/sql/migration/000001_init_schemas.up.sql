@@ -19,9 +19,8 @@ CREATE TABLE `cards` (
 );
 
 CREATE TABLE `rooms` (
-    `name`          VARCHAR(20) PRIMARY KEY,
+    `id`          VARCHAR(20) PRIMARY KEY,
     `password_hash` VARCHAR(255) NOT NULL,
-    `max_players`   INT NOT NULL DEFAULT 2,
     `status`        ENUM('waiting','playing') NOT NULL DEFAULT 'waiting',
     `created_at`    TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
@@ -29,6 +28,6 @@ CREATE TABLE `rooms` (
 CREATE TABLE `players` (
     `id`         CHAR(36) PRIMARY KEY,
     `username`   VARCHAR(32) NOT NULL REFERENCES users(username),
-    `room_name`  VARCHAR(20) NOT NULL REFERENCES rooms(name),
+    `room`  VARCHAR(20) NOT NULL REFERENCES rooms(id),
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );

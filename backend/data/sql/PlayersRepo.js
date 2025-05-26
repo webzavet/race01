@@ -6,15 +6,15 @@ export default class PlayersRepo {
         this.counter = counter
     }
 
-    async insert({id = uuidv4(), username, roomName, createdAt = new Date() }) {
-        const room = {
+    async insert({id = uuidv4(), username, room, createdAt = new Date() }) {
+        const stmt = {
             id: id,
             username: username,
-            room_name: roomName,
+            room: room,
             created_at: createdAt
         };
-        await this.builder.insert(room);
-        return room;
+        await this.builder.insert(stmt);
+        return stmt;
     }
 
     async delete() {
@@ -42,9 +42,9 @@ export default class PlayersRepo {
         return this;
     }
 
-    filterRoomName(name) {
-        this.builder  = this.builder.where('room_name', name);
-        this.counter  = this.counter.where('room_name', name);
+    filterRoom(room) {
+        this.builder  = this.builder.where('room', room);
+        this.counter  = this.counter.where('room', room);
         return this;
     }
 
