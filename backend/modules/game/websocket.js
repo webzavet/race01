@@ -43,8 +43,6 @@ export default class WebSocketGateway {
         });
     }
 
-
-
     /* ------------- main connection handler ------------- */
     async _setupConnection() {
         this.io.on('connection', async (socket) => {
@@ -66,18 +64,37 @@ export default class WebSocketGateway {
                     socket.to(roomID).emit('waitingOpponent', {username: player.username});
                 } else if (count === 2) {
                     const session = await this.game.startGame(roomID);
-                    this.io.to(roomID).emit('startGame', {id: roomID, session});
+                    this.io.to(roomID).emit('startGame', {id: roomID});
+                    await this._emitGameState(roomID);
                 } else {
                     throw new wsError('Room is full');
                 }
 
                 /* ------- gameplay events ------- */
-                socket.on('playCardAttack', this._handlePlayCard(attackStage, roomID));
-                socket.on('playCardDefense', this._handlePlayCard(defenseStage, roomID));
+                socket.on('playCardAttack', async (data) => {
+                    const cardId = data.cardId;
+                    if (!cardId) {
+                        socket.emit('error', { message: 'cardId is required' });
+                        return;
+                    }
+                    await this._handlePlayCard(roomID, attackStage, cardId);
+                    await this._emitGameState(roomID);
+                });
+
+                socket.on('playCardDefense', async (data) => {
+                    const cardId = data.cardId;
+                    if (!cardId) {
+                        socket.emit('error', { message: 'cardId is required' });
+                        return;
+                    }
+                    await this._handlePlayCard(roomID, defenseStage, cardId);
+                    await this._emitGameState(roomID);
+                });
 
                 socket.on('endGame', async () => {
                     await this.game.endGame(roomID);
                     this.io.to(roomID).emit('endGame', {by: user.username});
+                    await this._emitGameState(roomID);
                     this.io.socketsLeave(roomID);
                 });
 
@@ -102,43 +119,71 @@ export default class WebSocketGateway {
     }
 
     /* ------------- factory for playCard handlers ------------- */
-    _handlePlayCard(side, roomID) {
-        return async ({ cardId }) => {
-            const card = await this.game.addCardToTable(roomID, side, cardId);
+    /* ------------ обновлённый метод ------------ */
+    async _handlePlayCard(roomID, side, cardId) {
+        try {
+            // 1. кладём карту на стол
+            const card    = await this.game.addCardToTable(roomID, side, cardId);
             const session = await this.game.getGame(roomID);
 
-            this.io.to(roomID).emit('cardPlayed', { side, card, nextStage: session.stage });
+            this.io.to(roomID).emit('cardPlayed', {
+                side,
+                card,
+                nextStage: session.stage           // 'defense' или 'fighting'
+            });
+            await this._emitGameState(roomID);
 
+            // 2. если ещё не фаза боя — ждём карту соперника
             if (session.stage !== fightingStage) return;
 
-            // resolve battle only after defender played
+            // 3. бой
             const diff = await this.game.cardBattle(roomID);
             this.io.to(roomID).emit('battleResult', { diff });
+            await this._emitGameState(roomID);
 
+            // await this.game.StartRound(roomID);
+
+            // 4. снимаем здоровье у защитника
             await this.game.removeHealthFromPlayer(roomID, defenseStage, diff);
+            await this.game.startRound(roomID);
             const updated = await this.game.getGame(roomID);
             this.io.to(roomID).emit('hpUpdate', {
-                attackHP: updated.players.attack.health,
-                defenseHP: updated.players.defense.health,
+                attackHP:  updated.players.attack.health,
+                defenseHP: updated.players.defense.health
             });
 
+            await this._emitGameState(roomID);
+
+            // 5. проверяем победителя
             if (updated.winner.length) {
                 const reason = updated.winner.length === 2 ? 'draw' : 'player defeated';
                 this.io.to(roomID).emit('endGame', { winner: updated.winner, reason });
-                this.io.socketsLeave(roomID);
-                return;
+                await this._emitGameState(roomID);
+                return this.io.socketsLeave(roomID);
             }
 
+            // 6. раздаём новые карты
             await this.game.handingCards(roomID);
-            const nextSession = await this.game.getGame(roomID);
+            const next = await this.game.getGame(roomID);
             this.io.to(roomID).emit('handingCards', {
-                round: nextSession.round,
+                round: next.round,
                 hands: {
-                    attack: nextSession.players.attack.hand,
-                    defense: nextSession.players.defense.hand,
-                },
+                    attack:  next.players.attack.hand,
+                    defense: next.players.defense.hand
+                }
             });
-        };
+
+            await this._emitGameState(roomID);
+
+        } catch (err) {
+            log.error(`Play card error: ${err.message}`);
+            this.io.to(roomID).emit('error', { message: err.message || 'Unknown play card error' });
+        }
+    }
+
+    async _emitGameState(roomID) {
+        const session = await this.game.getGame(roomID);
+        this.io.to(roomID).emit('gameState', session);
     }
 }
 

@@ -1,5 +1,6 @@
 import {sessions} from "../../data/cache/sessions.js";
 import {database} from "../../data/sql/Database.js";
+import log from "../../tools/logger/Logger.js";
 
 export const attackStage  = 'attack';
 export const defenseStage = 'defense';
@@ -53,7 +54,6 @@ export class Game {
         const gameSession = {
             round: 1,
             stage: attackStage,
-            condition: playingCond,
 
             players: {
                 attack: {
@@ -119,20 +119,30 @@ export class Game {
         return session.players.defense;
     }
 
-    async StartRound(roomID) {
+    async startRound(roomID) {
         const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
-        if (session.condition !== 'playing') {
-            throw new Error('Game is not in progress');
-        }
-
         if (session.stage !== fightingStage) {
-            throw new Error('Game is not in the handing stage');
+            throw new Error('Game is not in the fighting stage');
         }
 
         if (session.winner) {
             return session.players[session.winner];
+        }
+
+        if (session.players.attack.elixir + 4 > 10) {
+            session.players.attack.elixir = 10;
+        }
+        else {
+            session.players.attack.elixir = session.players.attack.elixir + 4;
+        }
+
+        if (session.players.defense.elixir + 4 > 10) {
+            session.players.defense.elixir = 10;
+        }
+        else {
+            session.players.defense.elixir = session.players.defense.elixir + 4;
         }
 
         session.round++;
@@ -143,9 +153,7 @@ export class Game {
         const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
-        if (session.condition !== 'playing') {
-            throw new Error('Game is not in progress');
-        }
+        log.info(`Handing cards in room ${roomID}`);
 
         if (session.stage !== fightingStage) {
             throw new Error('Game is not in the fighting stage something went wrong');
@@ -160,7 +168,11 @@ export class Game {
 
             session.deck = shuffleCards(session.discard);
             session.discard = [];
+
+            log.info('Deck was shuffled from discard pile');
         }
+
+        log.info(`Deck length: ${session.deck.length}`);
 
         const drawFor = (side) => {
             const hand = session.players[side].hand;
@@ -174,6 +186,8 @@ export class Game {
 
         session.stage = attackStage
 
+        log.info(`New stage: ${session.stage}`);
+
         await this.sessions.set(roomID, session);
     }
 
@@ -181,20 +195,32 @@ export class Game {
         const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
-        if (session.condition !== 'playing') {
-            throw new Error('Game is not in playing state');
-        }
+        log.info(`Adding card ${cardId} to ${side} table in room ${roomID}`);
+
         if (session.stage !== side) {
             throw new Error(`Not ${side}’s turn`);
         }
 
-        const player = session.players[side];
+        let player
+        if (side === 'defense') {
+            player = session.players.defense;
+        } else if (side === 'attack') {
+            player = session.players.attack;
+        }
+
         if (player.table && Object.keys(player.table).length > 0) {
             throw new Error(`${side} table already has a card`);
         }
 
+        log.info(`Adding card ${cardId} to ${side} table in room ${roomID}`);
+
+        log.info("Cards in player's hand:", player.hand.map(c => c.id));
+
         const hand = player.hand;
-        const idx  = hand.findIndex(c => c.id === cardId);
+        // Преобразуем incoming cardId к строке
+        const idToFind = String(cardId);
+
+        const idx = hand.findIndex(c => c.id === idToFind);
         if (idx < 0) {
             throw new Error('Card not in hand');
         }
@@ -218,40 +244,48 @@ export class Game {
         // 8) Сохраняем обновлённую сессию
         await this.sessions.set(roomID, session);
 
+        log.info(`Card ${card.id} added to ${side} table in room ${roomID}`);
+
         return card;
     }
 
     async cardBattle(roomID) {
-        let session = this.sessions.get(roomID);
+        let session = await this.sessions.get(roomID);
 
-        if (session.condition !== 'playing') {
-            throw new Error('Game is not in progress');
-        }
+        log.info(`Starting card battle in room ${roomID}`);
 
         session.stage = fightingStage;
 
         let attackCard = session.players.attack.table;
         let defenceCard = session.players.defense.table;
 
+        log.info(`Attack card ${attackCard.id}`);
+        log.info(`Defence card ${defenceCard.id}`);
+
         if (!attackCard || !defenceCard) {
             throw new Error('Card not found');
         }
 
-        const agilityIndex = calculateAttributes(attackCard.attribute, defenceCard.attribute);
+        const AttributesIndex = calculateAttributes(attackCard.attribute, defenceCard.attribute);
 
-        return defenceCard.defence * agilityIndex - attackCard.attack;
+        log.info(`Attributes index: ${AttributesIndex}`);
+
+        const res = defenceCard.defence * AttributesIndex - attackCard.attack
+
+        log.info(`Battle result: ${res}`);
+
+        return res;
     }
 
     async removeHealthFromPlayer(roomID, side, health) {
         const session = await this.sessions.getCopy(roomID);
+
+        log.info(`Removing health from player in room ${roomID}`);
+
         if (!session) throw new Error('Session not found');
 
-        if (session.condition !== 'playing') {
-            throw new Error('Game is not in progress');
-        }
-
-        if (session.stage !== handingStage) {
-            throw new Error('Game is not in the handing stage');
+        if (session.stage !== fightingStage) {
+            throw new Error('Game is not in the fight stage');
         }
 
         if (side !== 'attack' && side !== 'defense') {
@@ -261,8 +295,9 @@ export class Game {
         const player = session.players[side];
         player.health -= health;
 
+        log.info(`Player ${player.username} health after battle: ${player.health}`);
+
         if (player.health <= 0) {
-            session.condition = 'finished';
             session.winner.add(side);
         }
 

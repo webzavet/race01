@@ -200,7 +200,6 @@ export default class RoomsDomain {
 
         await this.db.players().insert(newPlayer);
 
-
         players = await this.db.players().filterRoom(roomID).select();
 
         let usernames = players.map(player => player.username);
