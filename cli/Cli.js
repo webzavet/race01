@@ -1,10 +1,10 @@
-import Config from './tools/config/Config.js';
-import log from './tools/logger/Logger.js';
-import Migrator from './tools/migrator/Migrator.js';
-import { Api } from './api/Api.js';
-import config from './tools/config/Config.js';
+import Config from '../tools/config/Config.js';
+import log from '../tools/logger/Logger.js';
+import Migrator from '../tools/migrator/Migrator.js';
+import { Api } from '../api/Api.js';
+import config from '../tools/config/Config.js';
 
-export default class Backend {
+export default class Cli {
     /**
      * Starting the backend server.
      * @param {string[]} args — the arg from command line (process.argv.slice(2))

@@ -1,9 +1,9 @@
 import process from 'process';
-import Backend from "./backend/Backend.js";
+import Cli from "./cli/Cli.js";
 
 async function main() {
     const args = process.argv.slice(2);
-    const success = await Backend.Run(args);
+    const success = await Cli.Run(args);
     if (!success) {
         console.error('Failed to start backend. Exiting.');
         process.exit(1);
