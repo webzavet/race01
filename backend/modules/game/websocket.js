@@ -6,6 +6,11 @@ import config from '../../tools/config/Config.js';
 import {attackStage, defenseStage, fightingStage, Game} from './Game.js';
 import { database } from "../../data/sql/Database.js";
 
+// Helper function to sleep for a given number of milliseconds
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 export default class WebSocketGateway {
     constructor(server) {
         this.io = new IOServer(server, {
@@ -220,6 +225,8 @@ export default class WebSocketGateway {
             // if it`s not a fighting stage, we just return
             if (session.stage !== fightingStage) return;
 
+            await sleep(1000);
+
             // ── SERVER → CLIENT
             // event: 'battleResult'
             // payload: { diff: number }
@@ -228,6 +235,8 @@ export default class WebSocketGateway {
 
             // full sessions data go to functions and see for how it works
             await this._emitGameState(roomID);
+
+            await sleep(2000);
 
             // helper function to get updated game state (nothing sends to client)
             await this.game.startRound(roomID);
@@ -258,6 +267,7 @@ export default class WebSocketGateway {
                 return this.io.socketsLeave(roomID);
             }
 
+            await sleep(1000);
 
             // helper function to hand out new cards (nothing sends to client)
             await this.game.handingCards(roomID);

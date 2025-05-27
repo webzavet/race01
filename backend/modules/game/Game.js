@@ -92,6 +92,7 @@ export class Game {
         }
 
         await this.sessions.delete(roomID, session);
+        await this.database.rooms().filterID(roomID).delete();
     }
 
     async getGame(roomID) {
