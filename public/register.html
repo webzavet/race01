@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Registration</title>
+        <link rel="stylesheet" href="css/auth.css">
+    </head>
+    <body>
+        <div id="container">
+            <h1>Registration</h1>
+            <form id="registerForm">
+                <div class="field">
+                    <label for="login">Login:</label>
+                    <input type="text" id="login" name="login" required />
+                </div>
+                <div class="field">
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" required />
+                </div>
+                <div class="field">
+                <label for="confirm_password">Confirm password</label>
+                <input type="password" id="confirm_password" name="confirm_password" required />
+                </div>
+                <div id="message"><span></span></div>
+                
+                <div id="buttons">
+                    <button type="button" onclick="window.location.href='login.html'">Login</button>
+                    <button type="submit">Register</button>
+                </div>
+            </form>    
+        </div>
+
+        <script>
+            document.getElementById('registerForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const login = document.getElementById('login').value;
+                const password = document.getElementById('password').value;
+                const confirm_password = document.getElementById('confirm_password').value;
+
+                if (password != confirm_password) {
+                    document.getElementById('message').innerHTML = `<span style="color:red">Passwords do not match</span>`;
+                    return;
+                }
+
+                try {
+                    const response = await fetch ('/auth/register', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            data: {
+                                id: login,
+                                type: "register",
+                                attributes: {
+                                    password: password,
+                                    password_confirmation: confirm_password
+                                }
+                            }
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        document.getElementById('message').innerHTML = `<span style="color:green">Registration successful</span>`;
+                        console.log(result);
+                    }
+                    else {
+                        const error = result.errors?.[0]?.detail || "Registration error";
+                        document.getElementById('message').innerHTML = `<span style="color:red">${error}</span>`;
+                    }
+                }
+                catch (err) {
+                    console.error (err);
+                    document.getElementById('message').innerHTML = `<span style="color:red">Server error</span>`;
+                    
+                }
+            });
+        </script>
+    </body>
+</html>

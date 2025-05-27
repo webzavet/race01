@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+        <title>Login</title>
+        <link rel="stylesheet" href="css/auth.css">
+    </head>
+    <body>
+        <div id="container">
+            <h1>Login</h1>
+            <form id="loginForm">
+                <div class="field">
+                    <label for="login">Login:</label>
+                    <input type="text" id="login" name="login" required />
+                </div>
+                <div class="field">
+                    <label for="password">Password:</label>
+                    <input type="password" id="password" name="password" required />
+                </div>
+                <div id="message"><span></span></div>
+                
+                <div id="buttons">
+                    <button type="button" onclick="window.location.href='register.html'">Register</button>
+                    <button type="submit">Login</button>
+                </div>
+            </form>    
+        </div>
+
+        <script>
+            document.getElementById('loginForm').addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                const login = document.getElementById('login').value;
+                const password = document.getElementById('password').value;
+                
+                try {
+                    const response = await fetch ('/auth/login', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            data: {
+                                id: login,
+                                type: "login",
+                                attributes: {
+                                    password: password
+                                }
+                            }
+                        })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        const token = result.data.attributes.token;
+                        localStorage.setItem('token', token);
+                        console.log(token);
+
+                        document.getElementById('message').innerHTML = `<span style="color:green">Login successful</span>`;
+                        console.log(result);
+
+                        console.log(localStorage.getItem('token'));
+
+                        setTimeout(() => {
+                            window.location.href = '/';
+                        }, 1000);
+                    }
+                    else {
+                        document.getElementById('message').innerHTML = `<span style="color:red">${result.message || "Loging error"}</span>`;
+                    }
+                }
+                catch (err) {
+                    document.getElementById('message').innerHTML = `<span style="red">Server error</span>`;
+                    console.error(err);
+                }
+            });
+            localStorage.clear();
+        </script>
+    </body>
+</html>

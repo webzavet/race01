@@ -26,6 +26,19 @@ export class Api {
         this.io = null;
 
         this.app.use(express.json());
+        this.app.get('/login', (req, res) => {
+            res.sendFile('login.html', { root: 'public' });
+        });
+
+        this.app.get('/register', (req, res) => {
+            res.sendFile('register.html', { root: 'public' });
+        });
+        
+        this.app.get('/', (req, res) => {
+            res.sendFile('index.html', { root: 'public' });
+        });
+
+        this.app.use(express.static('public'));
 
         this.app.use((req, _res, next) => {
             log.info(`${req.method} ${req.originalUrl}`);

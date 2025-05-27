@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Loading...</title>
+        <link rel="stylesheet" href="css/load.css" />
+    </head>
+    <body>
+        <div class="background-overlay">
+            <div class="container">
+                <div class="spinner"></div>
+                <label>waiting for game...</label>
+            </div>
+        </div>
+        <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+        <script>
+            const token = localStorage.getItem('token');
+
+            if (!token) {
+                window.location.href = '/login';
+            }
+
+            const socket = io('http://localhost:8123', {
+                transports: ['websocket'],
+                auth: {
+                    token: `Bearer ${token}`,
+                },
+            });
+
+            socket.on('connect', () => {
+                console.log('[WS] Connected on waiting page');
+            });
+
+            socket.on('startGame', (data) => {
+                console.log('[WS] startGame received:', data);
+                window.location.href = '/buttlefield.html'; // переход к игре
+            });
+
+            socket.on('disconnect', () => {
+                console.log('[WS] Disconnected');
+            });
+
+            socket.on('error', (err) => {
+                console.error('[WS] Error:', err.message || err);
+            });
+        </script>
+    </body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Menu</title>
+        <link rel="stylesheet" href="css/style.css" />
+        <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+    </head>
+    <body>
+        <div class="background-overlay"></div>
+
+        <div class="menu-box">
+            <h2 class="username">Welcome</h2>
+            <!-- change to login -->
+
+            <p class="avatar-title">Choose your avatar:</p>
+            <div class="avatar-selection">
+                <img src="images/palka1.png" class="avatar" alt="Avatar 1" />
+                <img src="images/palka2.png" class="avatar" alt="Avatar 2" />
+                <img src="images/palka3.png" class="avatar" alt="Avatar 3" />
+                <img src="images/palka4.png" class="avatar" alt="Avatar 4" />
+            </div>
+
+            <div class="buttons">
+                <button class="btn logout">Logout</button>
+                <button
+                    class="btn collection"
+                    type="button"
+                    onclick="window.location.href='card_collection.html'"
+                >
+                    Collection
+                </button>
+                <button class="btn play" type="button">Play</button>
+            </div>
+        </div>
+
+        <div class="game_starting">
+            <div class="board_around">
+                <div class="radio_container">
+                    <input
+                        type="radio"
+                        id="create"
+                        name="session"
+                        value="create"
+                        class="input_display"
+                    />
+                    <label for="create" id="left">Create session</label>
+
+                    <input
+                        type="radio"
+                        id="connect"
+                        name="session"
+                        value="connect"
+                        class="input_display"
+                    />
+                    <label for="connect" id="right">Connect session</label>
+                </div>
+                <form class="data_container">
+                    <input
+                        type="text"
+                        placeholder="Name of lobby"
+                        id="name_for_lobby"
+                        name="name_for_lobby"
+                        required
+                    />
+                    <input
+                        type="password"
+                        placeholder="Password"
+                        id="password_for_lobby"
+                        name="password_for_lobby"
+                        required
+                    />
+                </form>
+                <div id="message"></div>
+                <div class="button_container">
+                    <button class="btn_cofirm" id="btn_back">Back</button>
+                    <button class="btn_cofirm" id="btn_confirm">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+        <script src="js/auth.js"></script>
+        <script src="js/logout.js"></script>
+        <script src="js/hide.js"></script>
+        <script src="js/session.js"></script>
+    </body>
+</html>

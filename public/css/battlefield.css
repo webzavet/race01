@@ -1,0 +1,181 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial', sans-serif;
+    background: url('../images/marvel.jpg') no-repeat center center fixed;
+    background-size: cover;
+    position: relative;
+    height: 100vh;
+    color: #fff;
+  }
+
+.background-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 0;
+  }
+.container {
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  
+    background-color: #1e1e1e;
+    /* border:3px solid #080808; */
+    width: 92%; /*52 */
+    height: 95%;
+    border-radius: 16px;
+    box-shadow: 0px 0px 15px 10px rgba(0, 0, 0, 0.5);
+    text-align: center;
+  }
+
+.battlefield{
+    display: flex;
+    flex-direction: column;
+    width: 91%;
+
+}
+.enemy{
+    display: flex;
+    flex-direction: row;
+    height: 45%;
+    /* background-color: pink; */
+}
+.enemy_battle{
+    width: calc(100% - 150px);
+}
+.enemy_cards{
+    margin-right: 30px;
+    display: flex;
+    justify-content: right;
+    overflow: hidden;
+
+}
+.enemy_card_img{
+    box-shadow: 10px 0px 10px 0px rgba(0, 0, 0, 0.6) ;
+    width:100px;
+    margin-top:-20px;
+    margin-left: -30px;
+    filter: brightness(70%);
+    transform: rotate(180deg);
+    
+}
+
+.enemy_avatar{
+    border-radius:0 5px 0 10px;
+    border-left: 5px solid #4c4c4c;
+    border-bottom: 5px solid #4c4c4c;
+    height: 150px;
+    width: 150px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.board{
+    display:flex;
+    flex-direction: row;
+    height: 10%;
+    /* background-color: white; */
+    background-color:#4c4c4c5a ;
+    justify-content: right;
+    align-items: center;
+    border-radius: 0 10px 10px 0;
+    margin: 0 5px 0 0px
+    
+}
+.timer{
+    width: 15%;
+    /* background-color: pink; */
+    height: auto;
+
+}
+
+.move {
+    width: 70%;
+
+}
+.God{
+    transform: rotate(225deg);
+    height: 100px;
+    border-radius:10px ;
+}
+
+.board_button_container{
+    width: 15%;
+    /* background-color: red; */
+}
+.board_button{
+    margin: 0 10px 0 0;
+    background-color: #1e1e1e;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    width: 100px;
+    height: 25px;
+    transition: box-shadow 0.25s ease ;
+}
+.board_button:hover{
+    box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.2);
+}
+.player{
+    display: flex;
+    flex-direction: row;
+    height: 45%;
+    /* background-color: red; */
+}
+.player_battle{
+
+    width: calc(100% - 150px);
+    display: flex;
+    justify-content: left;
+    flex-direction: row;
+}
+.player_battle_card{
+    box-shadow: 0px 5px 10px 5px rgba(0, 0, 0, 0.3);
+    margin: 8% 25px 0 35px;
+    height: 45%;
+}
+
+.player_avatar{
+    border-radius:10px 0 5px 0;
+    border-left: 5px solid #4c4c4c;
+    border-top: 5px solid #4c4c4c;
+    height: 150px;
+    width: 150px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.6);
+}
+
+.player_cards{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 9%;
+    border-right: 5px solid #4c4c4c5a;
+
+}
+.card_holder{
+    margin: 1% 0 0 0;
+    height: 18%;
+    width: auto;
+}
+.player_card_img {
+    flex-grow: 1;
+    height: 100%;
+    width: auto;
+    margin: 7px;
+    object-fit: contain;
+    
+}
+
+.avatar_container_player{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
