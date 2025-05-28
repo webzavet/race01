@@ -9,7 +9,7 @@ CREATE TABLE `cards` (
     `id`         VARCHAR(36) PRIMARY KEY,
     `name`       VARCHAR(255) UNIQUE NULL,
     `icon`       VARCHAR(512) NOT NULL,
-    `sound`      VARCHAR(512) NOT NULL DEFAULT 'media/cards/sounds/ekh.mp3',
+    `sound`      VARCHAR(512) NOT NULL DEFAULT 'public/media/cards/sounds/ekh.mp3',
     `descr`      VARCHAR(1000) NOT NULL,
     `attack`     INT NOT NULL,
     `defence`    INT NOT NULL,

@@ -13,6 +13,12 @@ properties:
           enum: [cards_collection]
           description: The type of the resource.
         attributes:
-          type: array
-          item:
-            $ref: "./CardData.yaml"
+          type: object
+          required:
+            - cards
+          properties:
+            cards:
+              type: array
+              description: List of cards in the collection.
+              items:
+                $ref: './CardData.yaml'

@@ -3,14 +3,14 @@ body {
   margin: 0;
   padding: 0;
   font-family: 'Lexend', sans-serif;
-  background: url('../images/marvel.jpg') no-repeat center center fixed;
+  background: url('../media/menu/home.jpeg') no-repeat center center fixed;
   background-size: cover;
   position: relative;
   height: 100vh;
   color: #fff;
   
 }
-  
+
 /* Затемнение фона */
 .background-overlay {
   position: fixed;

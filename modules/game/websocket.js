@@ -39,6 +39,7 @@ export default class WebSocketGateway {
             try {
                 const { token } = socket.handshake.auth || {};
                 if (!token)  {
+                    socket.disconnect();
                     throw new Error('Missing auth token');
                 }
 
@@ -62,6 +63,7 @@ export default class WebSocketGateway {
 
                 const player = await database.players().filterUsername(user.username).get();
                 if (!player) {
+                    socket.disconnect();
                     throw new wsError('Player record not found');
                 }
 
@@ -91,6 +93,7 @@ export default class WebSocketGateway {
                     // full sessions data go to functions and see for how it works
                     await this._emitGameState(roomID);
                 } else {
+                    socket.disconnect();
                     throw new wsError('Room is full');
                 }
 
@@ -159,10 +162,12 @@ export default class WebSocketGateway {
                  */
                 socket.on('endGame', async () => {
                     await this.game.endGame(roomID);
-                    this.io.to(roomID).emit('endGame', {by: user.username});
+                    this.io.to(roomID).emit('endGame', {by: user.username, });
 
                     // full sessions data go to functions and see for how it works
-                    await this._emitGameState(roomID);
+                    log.info(`Game ended for room ${roomID} by ${user.username}`);
+                    log.info(`Room ${roomID} deleted`);
+
                     this.io.socketsLeave(roomID);
                 });
 
@@ -225,63 +230,59 @@ export default class WebSocketGateway {
             // if it`s not a fighting stage, we just return
             if (session.stage !== fightingStage) return;
 
-            await sleep(1000);
-
-            // ── SERVER → CLIENT
-            // event: 'battleResult'
-            // payload: { diff: number }
-            const diff = await this.game.cardBattle(roomID);
-            this.io.to(roomID).emit('battleResult', { diff });
-
-            // full sessions data go to functions and see for how it works
-            await this._emitGameState(roomID);
-
-            await sleep(2000);
-
-            // helper function to get updated game state (nothing sends to client)
-            await this.game.startRound(roomID);
-
-            const updated = await this.game.getGame(roomID);
-
-            // ── SERVER → CLIENT
-            // event: 'hpUpdate'
-            // payload: { attackHP: number, defenseHP: number }
-            this.io.to(roomID).emit('hpUpdate', {
-                attackHP:  updated.players.attack.health,
-                defenseHP: updated.players.defense.health
-            });
-
-            // full sessions data go to functions and see for how it works
-            await this._emitGameState(roomID);
-
-            if (updated.winner.length) {
-                const reason = updated.winner.length === 2 ? 'draw' : 'player defeated';
+            // 4) Через 1 секунду расчёт битвы и эмит результата
+            setTimeout(async () => {
+                const diff = await this.game.cardBattle(roomID);
 
                 // ── SERVER → CLIENT
-                // event: 'endGame'
-                // payload: { winner: string[], reason: string }
-                this.io.to(roomID).emit('endGame', { winner: updated.winner, reason });
+                // event: 'battleResult'
+                // payload: { diff: number }
+                this.io.to(roomID).emit('battleResult', { diff });
+                this._emitGameState(roomID);
 
-                // full sessions data go to functions and see for how it works
-                await this._emitGameState(roomID);
-                return this.io.socketsLeave(roomID);
-            }
+                // 5) Через 2 секунды старт нового раунда и раздача карт
+                setTimeout(async () => {
+                    await this.game.startRound(roomID);
+                    const afterRound = await this.game.getGame(roomID);
 
-            await sleep(1000);
+                    // ── SERVER → CLIENT
+                    // event: 'hpUpdate'
+                    // payload: { attackHP: number, defenseHP: number }
+                    this.io.to(roomID).emit('hpUpdate', {
+                        attackHP:  afterRound.players.attack.health,
+                        defenseHP: afterRound.players.defense.health
+                    });
+                    this._emitGameState(roomID);
 
-            // helper function to hand out new cards (nothing sends to client)
-            await this.game.handingCards(roomID);
-            const next = await this.game.getGame(roomID);
-            this.io.to(roomID).emit('handingCards', {
-                round: next.round,
-                hands: {
-                    attack:  next.players.attack.hand,
-                    defense: next.players.defense.hand
-                }
-            });
+                    // Если есть победитель — завершаем
+                    if (afterRound.winner.length) {
+                        const reason = afterRound.winner.length === 2 ? 'draw' : 'player defeated';
 
-            // full sessions data go to functions and see for how it works
-            await this._emitGameState(roomID);
+                        // ── SERVER → CLIENT
+                        // event: 'endGame'
+                        // payload: { winner: string[], reason: string }
+                        this.io.to(roomID).emit('endGame', {
+                            winner: afterRound.winner,
+                            reason
+                        });
+                        this._emitGameState(roomID);
+                        return this.io.socketsLeave(roomID);
+                    }
+
+                    // И наконец — раздача карт и уведомление
+                    await this.game.handingCards(roomID);
+                    const next = await this.game.getGame(roomID);
+                    this.io.to(roomID).emit('handingCards', {
+                        round: next.round,
+                        hands: {
+                            attack:  next.players.attack.hand,
+                            defense: next.players.defense.hand
+                        }
+                    });
+                    this._emitGameState(roomID);
+                }, 2000);
+            }, 1000);
+
 
         } catch (err) {
             log.error(`Play card error: ${err.message}`);

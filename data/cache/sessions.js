@@ -60,7 +60,7 @@ class SessionStore {
     }
 
     async delete(roomId) {
-        await this._lock.acquire(roomId, () => this._sessions.delete(roomId));
+        this._sessions.delete(roomId);
     }
 
     async create(roomId, session) {

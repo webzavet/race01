@@ -1,21 +1,50 @@
 INSERT INTO `cards` (`id`, `name`, `icon`, `descr`, `attack`, `defence`, `cost`, `attribute`) VALUES
-('1', 'Ekh', 'media/cards/icons/ekh.png', 'A mysterious creature with a strange aura.', 5, 3, 2, 'strange'),
-('2', 'Zara', 'media/cards/icons/zara.png', 'A swift and agile warrior from the northern tribes.', 4, 2, 3, 'agility'),
-('3', 'Orin', 'media/cards/icons/orin.png', 'A wise mage with powerful spells.', 3, 4, 5, 'intellect'),
-('4', 'Thorn', 'media/cards/icons/thorn.png', 'A fierce beast with sharp claws.', 6, 1, 4, 'strange'),
-('5', 'Luna', 'media/cards/icons/luna.png', 'A mystical being that controls the tides.', 2, 5, 1, 'agility'),
-('6', 'Kron', 'media/cards/icons/kron.png', 'A guardian of the ancient ruins, strong and resilient.', 7, 2, 3, 'intellect'),
-('7', 'Vex', 'media/cards/icons/vex.png', 'A trickster spirit that confuses its enemies.', 3, 3, 2, 'strange'),
-('8', 'Fira', 'media/cards/icons/fira.png', 'A fiery elemental that burns with passion.', 5, 1, 4, 'agility'),
-('9', 'Grom', 'media/cards/icons/grom.png', 'A hulking brute with unmatched strength.', 8, 0, 5, 'intellect'),
-('10', 'Nix', 'media/cards/icons/nix.png', 'A shadowy figure that moves unseen.', 4, 4, 2, 'strange'),
-('11', 'Astra', 'media/cards/icons/astra.png', 'A celestial being that guides lost souls.', 2, 6, 1, 'agility'),
-('12', 'Bram', 'media/cards/icons/bram.png', 'A stalwart defender with an unbreakable shield.', 3, 7, 3, 'intellect'),
-('13', 'Cira', 'media/cards/icons/cira.png', 'A healer who mends the wounds of allies.', 1, 5, 2, 'strange'),
-('14', 'Drax', 'media/cards/icons/drax.png', 'A relentless warrior with a thirst for battle.', 6, 2, 4, 'agility'),
-('15', 'Elysia', 'media/cards/icons/elysia.png', 'A serene spirit that brings peace to the battlefield.', 2, 4, 1, 'intellect'),
-('16', 'Frost', 'media/cards/icons/frost.png', 'An icy elemental that freezes its foes.', 4, 3, 3, 'strange'),
-('17', 'Griff', 'media/cards/icons/griff.png', 'A majestic creature that soars through the skies.', 5, 2, 4, 'agility'),
-('18', 'Hawk', 'media/cards/icons/hawk.png', 'A keen-eyed hunter with unmatched precision.', 3, 5, 2, 'intellect'),
-('19', 'Ivy', 'media/cards/icons/ivy.png', 'A creeping vine that ensnares its enemies.', 2, 6, 1, 'strange'),
-('20', 'Jade', 'media/cards/icons/jade.png', 'A mystical guardian with a heart of stone.', 4, 4, 3, 'agility');
+('1', 'Адмірал', './media/cards/icons/admiral.png', 'Козакцький драйвер на хвилі', 6, 2, 3, 'agility'),
+
+('2', 'Ангел', './media/cards/icons/angel.png', 'Привід Берліну', 1, 5, 4, 'intellect'),
+
+('3', 'Бабка', './media/cards/icons/babka.png', 'Звичайна громадянинка Swagaрусі', 2, 2, 1, 'strange'),
+
+('4', 'Чорнобрива', './media/cards/icons/black-julia.png', 'Про її мріяв кожен татар', 8, 2, 4, 'agility'),
+
+('5', 'Кий', './media/cards/icons/boxer.png', 'Засновник міста Київ', 8, 8, 8, 'strange'),
+
+('6', 'Камар', './media/cards/icons/doctor.png', 'Він не допоміг розробника цієї гри', 1, 4, 2, 'intellect'),
+
+('7', 'Безумець', './media/cards/icons/bezumec.png', 'Я тобі вже казав що таке безумство', 3, 3, 3, 'agility'),
+
+('8', 'Гена', './media/cards/icons/gena.png', 'Головний равін на Русі', 5, 5, 3, 'intellect'),
+
+('9', 'Прораб', './media/cards/icons/hz-turok-mb.png', 'Збудував Одессу', 3, 3, 3, 'strange'),
+
+('10', 'Спортик', './media/cards/icons/yanik-sportik.png', 'Идиот', 1, 1, 1, 'strange'),
+
+('11', 'Шоколадний Барон', './media/cards/icons/poroh-hetman.png', 'Самий самий мужик у світі', 4, 4, 2, 'intellect'),
+
+('12', 'Юліана', './media/cards/icons/julia.png', 'Перша вогняна принцеса Русі', 4, 4, 2, 'agility'),
+
+('13', 'Серега Пірат', './media/cards/icons/yanik-caper.png', 'Злодій британець', 4, 4, 2, 'strange'),
+
+('14', 'Кролик', './media/cards/icons/yaceniuk-boxer.png', 'Так собі шутник', 4, 4, 2, 'intellect'),
+
+('15', 'Кізяк', './media/cards/icons/azirov.png', 'Язвій', 1, 1, 1, 'agility'),
+
+('16', 'Миколка', './media/cards/icons/paren-s-knigoi.png', 'Какой-то мужик', 4, 4, 2, 'agility'),
+
+('17', 'Супер-Козак', './media/cards/icons/lyashko-superman.png', 'Супер-Козак на вилах', 6, 2, 3, 'strange'),
+
+('18', 'Ведмедь', './media/cards/icons/medved.png', '30 lvl генерал-маг володіє алко-магією', 2, 2, 1, 'strange'),
+
+('19', 'Ковбой', './media/cards/icons/obeme.png', 'Намістник Swagaорусі на дикому западі', 0, 5, 2, 'intellect'),
+
+('20', 'Шустрік', './media/cards/icons/shystrik.png', 'Засновник 8+8 медіа', 6, 3, 4, 'intellect'),
+
+('21', 'Суддя', './media/cards/icons/sudia.png', 'Краще звони не йому', 2, 2, 2, 'strange'),
+
+('22', 'Вампір', './media/cards/icons/vamp.png', 'Плейбойкарті', 4, 4, 2, 'agility'),
+
+('23', 'Матрос', './media/cards/icons/matroska.png', 'Ви з Франковщини? УІ! УІ!', 4, 4, 2, 'agility'),
+
+('24', 'Бджолар', './media/cards/icons/yushenko.png', 'Ну ммммммммммммеееедддд.....', 4, 4, 2, 'intellect'),
+
+('25', 'Телек', './media/cards/icons/televed.png', 'Телевіщає з Торонто', 4, 4, 2, 'agility');

@@ -1,0 +1,173 @@
+.card {
+    position: relative;       /* контекст для абсолютного позиционирования */
+    border: 1px solid #3e2d07;
+    border-radius: 8px;
+    width: 230px;
+    height: 325px;
+    padding: 12px;
+    box-shadow: 2px 2px 6px rgba(0,0,0,0.1);
+    text-align: center;
+    background-color: #a88e2e;
+}
+
+/* общие правила для иконки атрибута */
+.attribute-icon {
+    position: absolute;
+    bottom: -8px;             /* отступ от низа карточки */
+    right: -6px;              /* отступ от правого края */
+    width: 40px;              /* размер иконки */
+    height: 40px;
+    background-size: contain; /* сохраняя пропорции помещаем в контейнер */
+    background-repeat: no-repeat;
+}
+
+/* фоны для конкретных атрибутов */
+.attribute_strange {
+    background-image: url("../media/cards/other/strange.webp");
+}
+.attribute_intellect {
+    background-image: url("../media/cards/other/intellect.webp");
+}
+.attribute_agility {
+    background-image: url("../media/cards/other/agility.png");
+}
+
+.card img {
+    height: auto;
+    border-radius: 4px;
+}
+.card h3 {
+    margin: 8px 0 4px;
+    font-size: 1.1em;
+}
+.card p {
+    font-size: 0.9em;
+    margin: 4px 0;
+}
+.stats {
+    display: flex;
+    justify-content: space-around;
+    margin-top: 8px;
+    font-size: 0.9em;
+}
+
+.error {
+    color: red;
+    margin-top: 20px;
+}
+
+.attribute_strange {
+    background-image: url(../media/cards/other/strange.webp);
+}
+
+.attribute_intellect {
+    background-image: url(../media/cards/other/intellect.webp);
+}
+
+.attribute_agility {
+    background-image: url(../media/cards/other/agility.png);
+}
+
+.card img.card_icon {
+    width: 200px !important;
+    height: 240px !important;
+    object-fit: cover !important;
+}
+
+/* контейнер эликсира */
+.elixir-container {
+    position: absolute;
+    left: -8px;
+    bottom: -6px;
+    width: 40px;      /* ровно под размер иконки */
+    height: 40px;
+}
+
+/* сама иконка — фон контейнера */
+.elixir-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;        /* заполняет весь контейнер */
+    background-image: url("../media/cards/other/ellexir.webp");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
+/* цифра — поверх иконки */
+.elixir-cost {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    margin: 0;
+    padding: 0;
+    color: #fff;         /* белый цвет */
+    font-size: 30px;     /* подберите нужный размер */
+    font-weight: bold;
+    line-height: 1;
+    pointer-events: none; /* чтобы число не ловило клики */
+}
+
+
+.card {
+    position: relative; /* уже есть, но напомню — must */
+}
+
+/* 1) Attack: левый-верх */
+.attack-container {
+    position: absolute;
+    left: -15px;
+    top: -20px; /* если хотите внизу: замените на bottom:12px */
+    width: 50px;
+    height: 50px;
+}
+.attack-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("../media/cards/other/attack.webp");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.attack-cost {
+    position: absolute;
+    top: 60%;
+    left: 55%;
+    transform: translate(-50%, -50%);
+    color: #000000;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    pointer-events: none;
+}
+
+/* 2) Defence: правый-верх (или правый-нижний, см. примечание) */
+.defence-container {
+    position: absolute;
+    right: -15px;
+    top: -20px; /* если хотите внизу: замените на bottom:12px */
+    width: 50px;
+    height: 50px;
+}
+.defence-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("../media/cards/other/defence.webp");
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+.defence-cost {
+    position: absolute;
+    top: 60%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-size: 20px;
+    font-weight: bold;
+    line-height: 1;
+    pointer-events: none;
+}
