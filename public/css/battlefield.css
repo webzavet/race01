@@ -67,9 +67,12 @@ body {
     transform: rotate(180deg);
     
 }
+#enemy_hp{
+    background-color: rgb(247, 94, 94);
+}
 
 .enemy_avatar{
-    border-radius:0 5px 0 10px;
+    border-radius:0 5px 0 0px;
     border-left: 5px solid #4c4c4c;
     border-bottom: 5px solid #4c4c4c;
     height: 150px;
@@ -203,7 +206,20 @@ body {
     flex-direction: column;
     justify-content: flex-end;
 }
-
+#player_hp{
+    font-weight: bold;
+    background-color: rgb(247, 94, 94);
+    width: 50%;
+}
+#player_mana{
+    font-weight: bold;
+    background-color: rgb(58, 108, 224);
+    width: 50%;
+}
+.hp_mana{
+    display: flex;
+    flex-direction: row;
+}
 .hp{
     font-size: 18px;
     border-top-left-radius:10px ;
