@@ -336,32 +336,3 @@ function shuffleCards(cards) {
     }
     return result;
 }
-
-function calculateAttributes(attack, defence) {
-    if (attack === intellect && defence === strength) {
-        return 1.5;
-    }
-
-    if (attack === strength && defence === intellect) {
-        return 0.5;
-    }
-
-    if (attack === strength && defence === agility) {
-        return 1.5;
-    }
-
-    if (attack === agility && defence === strength) {
-        return 0.5;
-    }
-
-    if (attack === agility && defence === intellect) {
-        return 1.5;
-    }
-
-    if (attack === intellect && defence === agility) {
-        return 0.5;
-    }
-
-    return 1;
-}
-
