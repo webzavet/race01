@@ -1,5 +1,3 @@
-// backend/data/SessionStore.js
-
 let example =  {
     round: 1,
     stage: "attack", //defence, //fight
@@ -45,7 +43,6 @@ class SessionStore {
         this._sessions = new Map();
     }
 
-    /* ─────────────────────── базовые CRUD ─────────────────────── */
     async set(roomId, session) {
         this._sessions.set(roomId, session);
     }

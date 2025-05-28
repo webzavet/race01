@@ -1,4 +1,3 @@
-// database.js
 import knex from 'knex';
 import RoomsRepo   from './RoomsRepo.js';
 import UsersRepo   from './UsersRepo.js';
@@ -55,5 +54,4 @@ export class Database {
     }
 }
 
-// экспортируем синглтон — чтобы пул был один на приложение
 export const database = new Database();

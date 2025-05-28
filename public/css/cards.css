@@ -22,8 +22,8 @@
 }
 
 /* фоны для конкретных атрибутов */
-.attribute_strange {
-    background-image: url("../media/cards/other/strange.webp");
+.attribute_strength {
+    background-image: url("../media/cards/other/strength.webp");
 }
 .attribute_intellect {
     background-image: url("../media/cards/other/intellect.webp");
@@ -56,8 +56,8 @@
     margin-top: 20px;
 }
 
-.attribute_strange {
-    background-image: url(../media/cards/other/strange.webp);
+.attribute_strength {
+    background-image: url(../media/cards/other/strength.webp);
 }
 
 .attribute_intellect {

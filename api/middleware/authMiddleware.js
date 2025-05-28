@@ -1,15 +1,9 @@
 import config from '../../tools/config/Config.js';
-import TokenManager from '../../tools/tokens/TokenManager.js'; // или ваш путь
+import TokenManager from '../../tools/tokens/TokenManager.js';
 import {AppError} from "../../tools/errors/AppError.js";
 
-// Инициализируем один раз при импорте
 const tm = new TokenManager();
 
-/**
- * Express-middleware для аутентификации по JWT.
- * При успехе — в req.user кладется payload токена.
- * При провале — отправляется 401.
- */
 
 export class TokenUnauthorizedError extends AppError {
     constructor(msg = 'Token not found') {

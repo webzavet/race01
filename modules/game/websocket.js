@@ -4,7 +4,6 @@ import TokenManager from '../../tools/tokens/TokenManager.js';
 import log from '../../tools/logger/Logger.js';
 import config from '../../tools/config/Config.js';
 import {attackStage, defenseStage, fightingStage, Game} from './Game.js';
-import { database } from "../../data/sql/Database.js";
 
 // Helper function to sleep for a given number of milliseconds
 function sleep(ms) {
@@ -61,13 +60,13 @@ export default class WebSocketGateway {
                 const user = socket.data.user;
                 let roomID;
 
-                const player = await database.players().filterUsername(user.username).get();
+                const player = await this.game.getPlayerByUsername(user.username);
                 if (!player) {
                     socket.disconnect();
                     throw new wsError('Player record not found');
                 }
-
                 roomID = player.room;
+
                 socket.join(roomID);
 
                 // ── SERVER → CLIENT: notify about player connection ──
@@ -209,8 +208,6 @@ export default class WebSocketGateway {
         });
     }
 
-    /* ------------- factory for playCard handlers ------------- */
-    /* ------------ обновлённый метод ------------ */
     async _handlePlayCard(roomID, user, side, cardId) {
         try {
             const card    = await this.game.addCardToTable(roomID, user, side, cardId);
@@ -230,7 +227,6 @@ export default class WebSocketGateway {
             // if it`s not a fighting stage, we just return
             if (session.stage !== fightingStage) return;
 
-            // 4) Через 1 секунду расчёт битвы и эмит результата
             setTimeout(async () => {
                 const diff = await this.game.cardBattle(roomID);
 
@@ -240,7 +236,6 @@ export default class WebSocketGateway {
                 this.io.to(roomID).emit('battleResult', { diff });
                 await this._emitGameState(roomID);
 
-                // 5) Через 2 секунды старт нового раунда и раздача карт
                 setTimeout(async () => {
                     await this.game.startRound(roomID);
                     const afterRound = await this.game.getGame(roomID);
@@ -254,7 +249,6 @@ export default class WebSocketGateway {
                     });
                     await this._emitGameState(roomID);
 
-                    // Если есть победитель — завершаем
                     if (afterRound.winner.length) {
                         const reason = afterRound.winner.length === 2 ? 'draw' : 'player defeated';
 
@@ -272,7 +266,6 @@ export default class WebSocketGateway {
                         return this.io.socketsLeave(roomID);
                     }
 
-                    // И наконец — раздача карт и уведомление
                     await this.game.handingCards(roomID);
                     const next = await this.game.getGame(roomID);
                     this.io.to(roomID).emit('handingCards', {

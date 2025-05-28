@@ -1,24 +1,3 @@
-// middleware/errors.js
-import {
-    UserNotFoundError,
-    UserAlreadyExistsError,
-    PasswordMismatchError,
-    InvalidPasswordError
-} from '../../modules/auth/errors.js';
-
-import {
-    RoomNameIsInvalidError,
-    RoomPasswordRequiredError,
-    RoomPasswordIsInvalidError,
-    RoomNameAlreadyTakenError,
-    PlayersNotFoundError,
-    PlayersIsNotInThisRoomError,
-    RoomNotFoundError,
-    PlayerNotFoundError,
-    PlayerAlreadyInRoomError,
-    RoomIsClosedError,
-    RoomIsFullError
-} from '../../modules/rooms/errors.js';
 import {AppError, InternalError} from "../../tools/errors/AppError.js";
 import log from "../../tools/logger/Logger.js";
 
@@ -33,10 +12,8 @@ export function errorMiddleware(err, req, res, next) {
         errorToHandle = new InternalError('Unexpected error occurred', err);
     }
 
-    // Логируем и саму ошибку, и её причину (cause), если есть
     log.error(`Error: ${errorToHandle.message}`, errorToHandle.cause);
 
-    // Формируем массив ошибок
     const payload = {
         errors: [
             {
