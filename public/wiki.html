@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Wiki Cards</title>
+    <link rel="stylesheet" href="css/cards.css" />
+    <link rel="stylesheet" href="css/wiki.css" />
+</head>
+<body>
+<div class="title-container">
+    <img class="title-logo" src="./media/menu/swagarusblack.png" alt="logo" />
+</div>
+<div id="cardsContainer" class="cards-container">
+
+</div>
+<div id="errorMsg" class="error"></div>
+<script>
+    document.addEventListener('DOMContentLoaded', async () => {
+        const container = document.getElementById('cardsContainer');
+        const errorMsg = document.getElementById('errorMsg');
+        try {
+            // Получаем токен из localStorage
+            const token = localStorage.getItem('token');
+            // Делаем запрос с передачей токена в заголовке
+            const res = await fetch('/cards', {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            const json = await res.json();
+            const cards = json.data.attributes.cards;
+            cards.forEach(card => {
+                const { attributes } = card;
+                const { name, icon, sound, descr, attack, defence, cost, attribute } = attributes;
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `
+                  <!-- атакующий в левом-верхнем -->
+                  <div class="attack-container">
+                    <div class="attack-cost">${attack}</div>
+                  </div>
+
+                  <!-- обороняющийся в правом-верхнем -->
+                  <div class="defence-container">
+                    <div class="defence-cost">${defence}</div>
+                  </div>
+
+                  <!-- существующий код -->
+                  <img class="card_icon" src="${icon}" alt="${name}">
+                  <h3>${name}</h3>
+                  <p>${descr}</p>
+                  <div class="attribute-icon attribute_${attribute}"></div>
+                  <div class="elixir-container">
+                    <div class="elixir-cost">${cost}</div>
+                  </div>
+                `;
+
+
+                container.appendChild(div);
+            });
+        } catch (err) {
+            errorMsg.textContent = `Ошибка: ${err.message}`;
+        }
+    });
+</script>
+</body>
+</html>

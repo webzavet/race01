@@ -4,10 +4,10 @@ post:
   summary: Create card
   description: Create a new card
   requestBody:
-      required: true
-      content:
+    required: true
+    content:
       application/json:
-          schema:
+        schema:
           $ref: '../spec/components/schemas/CardCreate.yaml'
   responses:
     '201':
@@ -44,14 +44,12 @@ get:
     '201':
       description: Cards retrieved successfully
       content:
-          application/json:
+        application/json:
           schema:
-              type: array
-              items:
-              $ref: '../spec/components/schemas/Card.yaml'
+            $ref: '../spec/components/schemas/CardsCollection.yaml'
     '500':
       description: Internal server error
       content:
-          application/json:
+        application/json:
           schema:
-              $ref: '../spec/components/schemas/Errors.yaml'
+            $ref: '../spec/components/schemas/Errors.yaml'

@@ -197,7 +197,6 @@ export default class RoomsDomain {
             createdAt: new Date(),
         };
 
-
         await this.db.players().insert(newPlayer);
 
         players = await this.db.players().filterRoom(roomID).select();
