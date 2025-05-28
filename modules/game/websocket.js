@@ -118,7 +118,7 @@ export default class WebSocketGateway {
                         socket.emit('error', { message: 'cardId is required' });
                         return;
                     }
-                    await this._handlePlayCard(roomID, attackStage, cardId);
+                    await this._handlePlayCard(roomID, user.username, attackStage, cardId);
 
                     // full sessions data go to functions and see for how it works
                     await this._emitGameState(roomID);
@@ -145,7 +145,7 @@ export default class WebSocketGateway {
                         socket.emit('error', { message: 'cardId is required' });
                         return;
                     }
-                    await this._handlePlayCard(roomID, defenseStage, cardId);
+                    await this._handlePlayCard(roomID, user.username, defenseStage, cardId);
 
                     // full sessions data go to functions and see for how it works
                     await this._emitGameState(roomID);
@@ -211,9 +211,9 @@ export default class WebSocketGateway {
 
     /* ------------- factory for playCard handlers ------------- */
     /* ------------ обновлённый метод ------------ */
-    async _handlePlayCard(roomID, side, cardId) {
+    async _handlePlayCard(roomID, user, side, cardId) {
         try {
-            const card    = await this.game.addCardToTable(roomID, side, cardId);
+            const card    = await this.game.addCardToTable(roomID, user, side, cardId);
             const session = await this.game.getGame(roomID);
 
             // ── SERVER → CLIENT
@@ -238,7 +238,7 @@ export default class WebSocketGateway {
                 // event: 'battleResult'
                 // payload: { diff: number }
                 this.io.to(roomID).emit('battleResult', { diff });
-                this._emitGameState(roomID);
+                await this._emitGameState(roomID);
 
                 // 5) Через 2 секунды старт нового раунда и раздача карт
                 setTimeout(async () => {
@@ -252,7 +252,7 @@ export default class WebSocketGateway {
                         attackHP:  afterRound.players.attack.health,
                         defenseHP: afterRound.players.defense.health
                     });
-                    this._emitGameState(roomID);
+                    await this._emitGameState(roomID);
 
                     // Если есть победитель — завершаем
                     if (afterRound.winner.length) {
@@ -265,7 +265,10 @@ export default class WebSocketGateway {
                             winner: afterRound.winner,
                             reason
                         });
-                        this._emitGameState(roomID);
+
+                        await this.game.endGame(roomID);
+
+                        await this._emitGameState(roomID);
                         return this.io.socketsLeave(roomID);
                     }
 
@@ -279,7 +282,7 @@ export default class WebSocketGateway {
                             defense: next.players.defense.hand
                         }
                     });
-                    this._emitGameState(roomID);
+                    await this._emitGameState(roomID);
                 }, 2000);
             }, 1000);
 

@@ -80,6 +80,6 @@ window.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('token')) {
         window.location.href = '/login';
     }
-    connectSocket(); // подключение к сокету чтобы проверить авторизацию
+    // connectSocket(); // подключение к сокету чтобы проверить авторизацию
     // не завершится успешно поскольку юзера нет в таблице players
 });

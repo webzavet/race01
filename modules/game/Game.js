@@ -130,6 +130,19 @@ export class Game {
             throw new Error('Game is not in the fighting stage');
         }
 
+        if (session.deck.length === 0) {
+            if (session.discard.length === 0) {
+                throw new Error('Deck and discard are empty');
+            }
+
+            session.deck = shuffleCards(session.discard);
+            session.discard = [];
+
+            log.info('Deck was shuffled from discard pile');
+        }
+
+        log.info(`Deck length: ${session.deck.length}`);
+
         if (session.winner && session.winner.length > 0) {
             return;
         }
@@ -170,19 +183,6 @@ export class Game {
 
         session.stage = handingStage;
 
-        if (session.deck.length === 0) {
-            if (session.discard.length === 0) {
-                throw new Error('Deck and discard are empty');
-            }
-
-            session.deck = shuffleCards(session.discard);
-            session.discard = [];
-
-            log.info('Deck was shuffled from discard pile');
-        }
-
-        log.info(`Deck length: ${session.deck.length}`);
-
         const drawFor = (side) => {
             const hand = session.players[side].hand;
             while (hand.length < 4 && session.deck.length > 0) {
@@ -200,7 +200,7 @@ export class Game {
         await this.sessions.set(roomID, session);
     }
 
-    async addCardToTable(roomID, side, cardId) {
+    async addCardToTable(roomID, user, side, cardId) {
         const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
@@ -216,6 +216,10 @@ export class Game {
         } else if (side === 'attack') {
             player = session.players.attack;
         }
+
+        // if (player.username !== user) {
+        //     throw new Error(`Player ${user} is not on the ${side} side`);
+        // }
 
         if (player.table && Object.keys(player.table).length > 0) {
             throw new Error(`${side} table already has a card`);
@@ -269,51 +273,57 @@ export class Game {
         }
 
         // 3) Берём карты
-        const attackCard  = session.players.attack.table;
-        const defenseCard = session.players.defense.table;
-        if (!attackCard || !defenseCard) {
+        const atk = session.players.attack.table;
+        const def = session.players.defense.table;
+        if (!atk || !def) {
             throw new Error('Both attack and defense cards must be played');
         }
 
-        // 4) Считаем силы с учётом атрибутов
-        const attackPower  = attackCard.attack  * calculateAttributes(attackCard.attribute,  defenseCard.attribute);
-        const defensePower = defenseCard.defence * calculateAttributes(defenseCard.attribute, attackCard.attribute);
+        // 4) Считаем атакующую силу и защитную силу
+        const atkMultiplier =
+            (atk.attribute === intellect   && def.attribute === strength) ||
+            (atk.attribute === strength    && def.attribute === agility)  ||
+            (atk.attribute === agility     && def.attribute === intellect)
+                ? 2
+                : 1;
+
+        const defMultiplier =
+            (def.attribute === intellect   && atk.attribute === strength) ||
+            (def.attribute === strength    && atk.attribute === agility)  ||
+            (def.attribute === agility     && atk.attribute === intellect)
+                ? 2
+                : 1;
+
+        const attackPower  = atk.attack  * atkMultiplier;
+        const defensePower = def.defence * defMultiplier;
 
         // 5) Определяем победителя и урон
-        let winner = null;
-        let damage = 0;
-        if (attackPower > defensePower) {
-            winner = 'attack';
-            damage = Math.ceil(attackPower - defensePower);
-        } else if (defensePower > attackPower) {
-            winner = 'defense';
-            damage = Math.ceil(defensePower - attackPower);
-        }
+        let damage = attackPower - defensePower;
+        const winner = damage > 0 ? 'attack' : 'defense';
+        damage = Math.abs(damage);
 
         // 6) Снимаем здоровье у проигравшей стороны
-        if (winner) {
-            const loserSide = winner === 'attack' ? 'defense' : 'attack';
-            session.players[loserSide].health -= damage;
+        const loserSide = winner === 'attack' ? 'defense' : 'attack';
+        session.players[loserSide].health -= damage;
 
-            // Если здоровье упало ≤ 0 — финиш
-            if (session.players[loserSide].health <= 0) {
-                session.condition = 'finished';
-                session.winner = [winner];
-            }
+        // фиксируем окончание игры, если здоровье ≤ 0
+        if (session.players[loserSide].health <= 0) {
+            session.condition = 'finished';
+            session.winner    = [winner];
         }
 
-        const aCard = session.players.attack.table;
-        const dCard = session.players.defense.table;
-        session.discard.push(aCard, dCard);
+        // 7) Перемещаем сыгранные карты в сброс
+        session.discard.push(atk, def);
 
-        session.players.attack.table  = {};
-        session.players.defense.table = {};
+        // 8) Очищаем столы как массивы
+        session.players.attack.table  = [];
+        session.players.defense.table = [];
 
-        // 7) Обновляем стадию и сохраняем
-        session.stage = fightingStage; // на всякий случай
+        // 9) Сохраняем стадию и сессию
+        session.stage = fightingStage;
         await this.sessions.set(roomID, session);
 
-        // 8) Возвращаем результат
+        // 10) Возвращаем результат
         return {
             winner,
             damage,

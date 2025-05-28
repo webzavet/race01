@@ -14,7 +14,7 @@ CREATE TABLE `cards` (
     `attack`     INT NOT NULL,
     `defence`    INT NOT NULL,
     `cost`       INT NOT NULL,
-    `attribute`  ENUM('strange','agility','intellect') NOT NULL,
+    `attribute`  ENUM('strength','agility','intellect') NOT NULL,
     `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
