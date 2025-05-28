@@ -14,8 +14,18 @@ socket.on('gameState', (session) => {
     const role = players.attack.username === username ? 'attack' : 'defense';
     const myHand = players[role].hand;
 
+    // Обновление HP
+    const myHP = players[role].health;
+    const enemyRole = role === 'attack' ? 'defense' : 'attack';
+    const enemyHP = players[enemyRole].health;
+
+    document.getElementById('player_hp').textContent = myHP;
+    document.getElementById('enemy_hp').textContent = enemyHP;
+
+    // Отрисовка карт
     renderMyHand(myHand);
 });
+
 
 function renderMyHand(cards) {
     const container = document.querySelector('.player_cards');
@@ -39,3 +49,9 @@ function renderMyHand(cards) {
 
     console.log('[DEBUG] Final HTML of .player_cards:', container.innerHTML);
 }
+
+window.addEventListener('DOMContentLoaded', () => {
+    if (!localStorage.getItem('token')) {
+        window.location.href = '/login';
+    }
+});

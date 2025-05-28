@@ -75,11 +75,8 @@ document.querySelector('.btn.play').addEventListener('click', () => {
     document.querySelector('.game_starting').style.display = 'block';
 });
 
-// connect socket
 window.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('token')) {
         window.location.href = '/login';
     }
-    connectSocket(); // подключение к сокету чтобы проверить авторизацию
-    // не завершится успешно поскольку юзера нет в таблице players
 });

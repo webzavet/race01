@@ -2,7 +2,7 @@ body {
     margin: 0;
     padding: 0;
     font-family: 'Arial', sans-serif;
-    background: url('../media/menu/marvel.jpg') no-repeat center center fixed;
+    background: url('../media/menu/home.jpeg') no-repeat center center fixed;
     background-size: cover;
     position: relative;
     height: 100vh;
@@ -135,6 +135,11 @@ body {
     display: flex;
     justify-content: left;
     flex-direction: row;
+    align-items: center;
+}
+.player_battle .card_with_stats{
+    margin-left:10%;
+    cursor: default;
 }
 .player_battle_card{
     box-shadow: 0px 5px 10px 5px rgba(0, 0, 0, 0.3);
@@ -161,17 +166,32 @@ body {
 }
 .card_holder{
     margin: 1% 0 0 0;
-    height: 18%;
+    height: 21%;
     width: auto;
+}
+.card_with_stats{
+    cursor: grab;
+    max-height: 165px;
+    aspect-ratio: 3 / 4;
+    position: relative;
+    height: 100%;
+
 }
 .player_card_img {
-    flex-grow: 1;
     height: 100%;
-    width: auto;
-    margin: 7px;
-    object-fit: contain;
+    aspect-ratio: 3 / 4;
+    border-radius: 10px;
+    flex-grow: 1;
+
+    /* margin: 7px; */
+    /* object-fit: contain; */
     
 }
+
+.card_with_stats:active {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+    cursor: grabbing;
+  }
 
 .avatar_container_player{
     display: flex;
@@ -179,3 +199,27 @@ body {
     justify-content: flex-end;
 }
 
+.hp{
+    font-size: 18px;
+    border-top-left-radius:10px ;
+    position: absolute;
+    left:0;
+    top:0;
+    background-color: gray;
+}
+.cost{
+    font-size: 18px;
+    border-bottom-left-radius:10px ;
+    position: absolute;
+    left:0;
+    bottom:0;
+    background-color: blue;
+}
+.dmg{
+    font-size: 18px;
+    border-top-right-radius: 10px;
+    position: absolute;
+    right:0;
+    top:0;
+    background-color: red;
+}
