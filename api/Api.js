@@ -43,6 +43,10 @@ export class Api {
             res.sendFile('wiki.html', { root: 'public' });
         });
 
+        this.app.get('/battlefield', (req, res) => {
+            res.sendFile('battlefield.html', { root: 'public' });
+        });
+
 
         this.app.use(express.static('public'));
         this.app.use('/media', express.static('media'));

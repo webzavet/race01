@@ -34,7 +34,7 @@
 
             socket.on('startGame', (data) => {
                 console.log('[WS] startGame received:', data);
-                window.location.href = '/battlefield.html'; // переход к игре
+                window.location.href = '/battlefield'; // переход к игре
             });
 
             socket.on('disconnect', () => {
