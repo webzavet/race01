@@ -2,6 +2,13 @@ const avatars = document.querySelectorAll('.avatar');
 let selectedAvatar = '';
 let socket = null;
 
+
+//username
+const username = localStorage.getItem('username');
+if (username) {
+    document.querySelector('.username').textContent = `Welcome, ${username}`;
+}
+
 //avatar
 avatars.forEach((avatar) => {
     avatar.addEventListener('click', () => {

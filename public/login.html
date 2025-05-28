@@ -54,6 +54,7 @@
                     if (response.ok) {
                         const token = result.data.attributes.token;
                         localStorage.setItem('token', token);
+                        localStorage.setItem('username', login);
                         console.log(token);
 
                         document.getElementById('message').innerHTML = `<span style="color:green">Login successful</span>`;

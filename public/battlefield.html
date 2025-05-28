@@ -3,27 +3,44 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>marvel huita</title>
-  <link rel="stylesheet" href="battlefield.css">
+  <title>Battlefield</title>
+  <link rel="stylesheet" href="css/battlefield.css">
 </head>
 <body>
     <div class="background-overlay"></div>
     <div class="container">
         <div class="player_cards">
             <div class="card_holder">
-                <img src="pictures/cards png/Aleksei_Sytsevich_29_from_Marvel_Universe_Trading_Cards_1993_Set_0001.png" class="player_card_img" alt="card 1" draggable="true">
+                <div class="card_with_stats">
+                    <img src="pictures/cards png/Ariel_Tremmore_(Earth-616)_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 2" draggable="true">
+                    <span class ="hp">52</span>
+                    <span class ="cost">52</span>
+                    <span class ="dmg">52</span>
+                </div>
             </div>
             <div class="card_holder">
-                <img src="pictures/cards png/Ariel_Tremmore_(Earth-616)_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 2" draggable="true">
+                <div class="card_with_stats">
+                    <img src="pictures/cards png/Elias_Wirtham_29_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 3" draggable="true">
+                    <span class ="hp">52</span>
+                    <span class ="cost">52</span>
+                    <span class ="dmg">52</span>
+                </div>
             </div>
             <div class="card_holder">
-                <img src="pictures/cards png/Elias_Wirtham_29_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 3" draggable="true">
+                <div class="card_with_stats">
+                    <img src="pictures/cards png/Matthew_Murdock_29_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 4" draggable="true">
+                    <span class ="hp">52</span>
+                    <span class ="cost">52</span>
+                    <span class ="dmg">52</span>
+                </div>
             </div>
             <div class="card_holder">
-                <img src="pictures/cards png/Matthew_Murdock_29_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 4" draggable="true">
-            </div>
-            <div class="card_holder">
-                <img src="pictures/cards png/Peter_Parker_29_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 5" draggable="true">
+                <div class="card_with_stats">
+                    <img src="pictures/cards png/Peter_Parker_29_from_Marvel_Universe_Cards_Series_IV_0001.png" class="player_card_img" alt="card 5" draggable="true">
+                    <span class ="hp">52</span>
+                    <span class ="cost">52</span>
+                    <span class ="dmg">52</span>
+                </div>
             </div> 
         </div>
         <div class ="battlefield">
@@ -44,7 +61,7 @@
             </div>
             <div class ="board">
                 <div class="timer">
-                    sec
+                    30
                 </div>
                 <div class="move">
                     
@@ -61,13 +78,15 @@
                     </div>
                     <div class ="avatar_container_player">
                         <div id="player_hp">30</div>
-                    <img src="pictures/palka2.png" class="player_avatar" alt="card 5">
+                    <img src="images/palka2.png" class="player_avatar" alt="card 5">
                     
                     
                 </div>
             </div>
         </div>
     </div>
-    <script src="rotate.js"></script>
+    <script src="js/rotate.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="js/game.js"></script>
 </body>
 </html>

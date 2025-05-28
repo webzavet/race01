@@ -39,6 +39,7 @@ export class Api {
         });
 
         this.app.use(express.static('public'));
+        this.app.use('/media', express.static('media'));
 
         this.app.use((req, _res, next) => {
             log.info(`${req.method} ${req.originalUrl}`);
