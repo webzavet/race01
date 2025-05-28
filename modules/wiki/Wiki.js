@@ -75,7 +75,7 @@ export default class Wiki {
             throw new InvalidCardDataError('Card cost is required must be greater than or equal to 0 and less than or equal to 10');
         }
         if (!card.attribute || (
-            card.attribute !== "strange" && card.attribute !== "agility" && card.attribute !== "intellect")
+            card.attribute !== "strength" && card.attribute !== "agility" && card.attribute !== "intellect")
         ) {
             throw new InvalidCardDataError('Card attribute is required or invalid');
         }

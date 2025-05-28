@@ -217,9 +217,9 @@ export class Game {
             player = session.players.attack;
         }
 
-        // if (player.username !== user) {
-        //     throw new Error(`Player ${user} is not on the ${side} side`);
-        // }
+        if (player.username !== user) {
+            throw new Error(`Player ${user} is not on the ${side} side`);
+        }
 
         if (player.table && Object.keys(player.table).length > 0) {
             throw new Error(`${side} table already has a card`);
@@ -254,7 +254,6 @@ export class Game {
             session.stage = fightingStage;
         }
 
-        // 8) Сохраняем обновлённую сессию
         await this.sessions.set(roomID, session);
 
         log.info(`Card ${card.id} added to ${side} table in room ${roomID}`);
@@ -263,23 +262,19 @@ export class Game {
     }
 
     async cardBattle(roomID) {
-        // 1) Получаем сессию
         const session = await this.sessions.getCopy(roomID);
         if (!session) throw new Error('Session not found');
 
-        // 2) Проверяем стадию
         if (session.stage !== fightingStage) {
             throw new Error('Game is not in fighting stage');
         }
 
-        // 3) Берём карты
         const atk = session.players.attack.table;
         const def = session.players.defense.table;
         if (!atk || !def) {
             throw new Error('Both attack and defense cards must be played');
         }
 
-        // 4) Считаем атакующую силу и защитную силу
         const atkMultiplier =
             (atk.attribute === intellect   && def.attribute === strength) ||
             (atk.attribute === strength    && def.attribute === agility)  ||
@@ -297,39 +292,36 @@ export class Game {
         const attackPower  = atk.attack  * atkMultiplier;
         const defensePower = def.defence * defMultiplier;
 
-        // 5) Определяем победителя и урон
         let damage = attackPower - defensePower;
         const winner = damage > 0 ? 'attack' : 'defense';
         damage = Math.abs(damage);
 
-        // 6) Снимаем здоровье у проигравшей стороны
         const loserSide = winner === 'attack' ? 'defense' : 'attack';
         session.players[loserSide].health -= damage;
 
-        // фиксируем окончание игры, если здоровье ≤ 0
         if (session.players[loserSide].health <= 0) {
             session.condition = 'finished';
             session.winner    = [winner];
         }
 
-        // 7) Перемещаем сыгранные карты в сброс
         session.discard.push(atk, def);
 
-        // 8) Очищаем столы как массивы
         session.players.attack.table  = [];
         session.players.defense.table = [];
 
-        // 9) Сохраняем стадию и сессию
         session.stage = fightingStage;
         await this.sessions.set(roomID, session);
 
-        // 10) Возвращаем результат
         return {
             winner,
             damage,
             hpAttack:  session.players.attack.health,
             hpDefense: session.players.defense.health
         };
+    }
+
+    async getPlayerByUsername(username) {
+        return await database.players().filterUsername(username).get();;
     }
 }
 
