@@ -1,25 +1,25 @@
-// --- DRAG-AND-DROP with delegation ---
-let dragged = null; // .card_with_stats being dragged
-let origin = null; // its original .card_holder
+// dragHandler.js
+import { socket } from './socketManager.js';
+import { getGameState } from './state.js';
+
+let dragged = null;
+let origin = null;
 let ghostImg = null;
 let dropOK = false;
 let hasPlayedCard = false;
 
-const hand = document.querySelector('.player_cards'); // parent of all cards
+const hand = document.querySelector('.player_cards');
 const battle = document.getElementById('player_battle');
 const username = localStorage.getItem('username');
-let currentSession = null;
 
-// listen once – works for every card now and in the future
 hand.addEventListener('dragstart', (e) => {
     const card = e.target.closest('.card_with_stats');
-    if (!card) return; // not a card
+    if (!card) return;
 
     dragged = card;
     origin = card.parentElement;
     dropOK = false;
 
-    // ----- custom ghost (optional) -----
     const rect = card.getBoundingClientRect();
     ghostImg = card.cloneNode(true);
     Object.assign(ghostImg.style, {
@@ -38,26 +38,20 @@ hand.addEventListener('dragend', () => {
     ghostImg?.remove();
     ghostImg = null;
     dragged?.style.removeProperty('opacity');
-
     if (!dropOK && dragged && origin) origin.appendChild(dragged);
     dragged = origin = null;
 });
 
-// ---------- drop zone ----------
 battle.addEventListener('dragover', (e) => {
-    if (dragged) e.preventDefault(); // allow drop
+    if (dragged) e.preventDefault();
 });
 
 battle.addEventListener('drop', () => {
-    if (!dragged || !currentSession) return;
+    const session = getGameState();
+    if (!dragged || !session) return;
 
-    const role =
-        currentSession.players.attack.username === username
-            ? 'attack'
-            : 'defense';
-    const isMyTurn = currentSession.stage === role;
-
-    if (!isMyTurn) {
+    const role = session.players.attack.username === username ? 'attack' : 'defense';
+    if (session.stage !== role) {
         alert('Not your turn!');
         return;
     }
@@ -68,14 +62,13 @@ battle.addEventListener('drop', () => {
     }
 
     const cardId = dragged.dataset.id;
-    const card = currentSession.players[role].hand.find((c) => c.id == cardId);
-
+    const card = session.players[role].hand.find((c) => c.id == cardId);
     if (!card) {
-        alert('Card not found in hand!');
+        alert('Card not in hand!');
         return;
     }
 
-    if (currentSession.players[role].elixir < card.cost) {
+    if (session.players[role].elixir < card.cost) {
         alert('Not enough elixir!');
         return;
     }

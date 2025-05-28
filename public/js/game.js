@@ -10,7 +10,8 @@ socket.on('connect', () => {
 });
 
 socket.on('gameState', (session) => {
-    const { players } = session;
+    const { players, stage } = session;
+    const username = localStorage.getItem('username');
     const role = players.attack.username === username ? 'attack' : 'defense';
     const myHand = players[role].hand;
 
@@ -21,6 +22,21 @@ socket.on('gameState', (session) => {
 
     document.getElementById('player_hp').textContent = myHP;
     document.getElementById('enemy_hp').textContent = enemyHP;
+
+    // Обновление указателя хода
+    const moveArrow = document.querySelector('.move_check');
+    if (stage === 'attack') {
+        moveArrow.style.transform = players.attack.username === username
+            ? 'rotate(180deg)' // твой ход
+            : 'rotate(0deg)';  // ход противника
+    } else if (stage === 'defense') {
+        moveArrow.style.transform = players.defense.username === username
+            ? 'rotate(180deg)'
+            : 'rotate(0deg)';
+    } else {
+        // Промежуточное состояние — нейтральное или скрытие
+        moveArrow.style.transform = 'rotate(90deg)';
+    } 
 
     // Отрисовка карт
     renderMyHand(myHand);
@@ -36,7 +52,7 @@ function renderMyHand(cards) {
         div.classList.add('card_holder');
 
         div.innerHTML = `
-            <div class="card_with_stats">
+            <div class="card_with_stats" data-id="${card.id}">
                 <img src="/${card.icon}" class="player_card_img" draggable="true">
                 <span class="hp">${card.defence}</span>
                 <span class="cost">${card.cost}</span>
@@ -59,7 +75,6 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 //give up
-
 socket.on('endGame', ({ by }) => {
     const username = localStorage.getItem('username');
 
@@ -74,11 +89,7 @@ socket.on('endGame', ({ by }) => {
     alert(message);
     socket.disconnect();
     console.log('Socket connected:', socket.connected);
-    //window.location.href = '/';
-     setTimeout(() => {
-        socket.disconnect();
-        window.location.href = '/';
-    }, 3000);
+    window.location.href = '/';
 });
 
 document.getElementById('big_nt_btn').addEventListener('click', () => {
