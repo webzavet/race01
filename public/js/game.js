@@ -50,8 +50,40 @@ function renderMyHand(cards) {
     console.log('[DEBUG] Final HTML of .player_cards:', container.innerHTML);
 }
 
+// check tocken
 window.addEventListener('DOMContentLoaded', () => {
     if (!localStorage.getItem('token')) {
         window.location.href = '/login';
     }
 });
+
+
+//give up
+
+socket.on('endGame', ({ by }) => {
+    const username = localStorage.getItem('username');
+
+    let message;
+    if (by === username) {
+        message = 'You lose!';
+    }
+    else {
+        message = 'You win!';
+    }
+
+    alert(message);
+    socket.disconnect();
+    console.log('Socket connected:', socket.connected);
+    //window.location.href = '/';
+     setTimeout(() => {
+        socket.disconnect();
+        window.location.href = '/';
+    }, 3000);
+});
+
+document.getElementById('big_nt_btn').addEventListener('click', () => {
+    if (confirm('Are you ready to accept your insignificance?')) {
+        socket.emit('endGame');
+    }
+});
+

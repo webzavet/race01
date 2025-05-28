@@ -97,7 +97,7 @@ body {
 }
 
 .move {
-    width: 70%;
+    width: 50%;
 
 }
 .God{
@@ -107,19 +107,24 @@ body {
 }
 
 .board_button_container{
-    width: 15%;
+    width: 35%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
     /* background-color: red; */
 }
+
 .board_button{
     margin: 0 10px 0 0;
     background-color: #1e1e1e;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 7px;
     width: 100px;
-    height: 25px;
+    height: 36px;
     transition: box-shadow 0.25s ease ;
 }
+
 .board_button:hover{
     box-shadow: 0 0 10px 5px rgba(0, 0, 0, 0.2);
 }
@@ -222,4 +227,26 @@ body {
     right:0;
     top:0;
     background-color: red;
+}
+
+#big_nt_btn{
+    display: flex;
+    
+    align-items: center;
+    justify-content: center;
+    min-width: max-content;
+    cursor: pointer;
+    transition: 0.2s;
+    border-radius: 7px;
+    outline: none;
+    font-weight: 500;
+    flex-direction: row;
+    color: rgb(247, 247, 247);
+    background: rgb(206, 64, 59);
+    padding: 0px 16px;
+    font-size: 1.4em;
+    height: 36px;
+    width: 100px;
+    font: inherit;
+    font-weight:bold;
 }
