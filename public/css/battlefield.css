@@ -242,7 +242,7 @@ body {
     left:0;
     top:0;
     background-color: gray;
-    background-image: url(../media/cards/other/defence.webp);
+    /* background-image: url(../media/cards/other/defence.webp); */
 }
 .cost{
     font-size: 18px;
@@ -251,7 +251,7 @@ body {
     left:0;
     bottom:0;
     background-color: blue;
-    background-image: url(../media/cards/other/ellexir.webp);
+  
 }
 .dmg{
     font-size: 18px;
@@ -259,27 +259,35 @@ body {
     position: absolute;
     right:0;
     top:0;
-    background-image: url(../media/cards/other/attack.webp);
-    
     background-color: red;
 }
 .agility{
     right:0;
     bottom:0;
     position: absolute;
-    background-image: url(../media/cards/other/agility.png);
+    height: 25px;
+    width: 15px;
+    background-color: rgb(53, 237, 43);
+    border-bottom-right-radius: 7px ;
 }
-.strength{
+.strange{
     right:0;
     bottom:0;
     position: absolute;
-    background-image: url(../media/cards/other/strange.webp);
+    
+    height: 25px;
+    width: 15px;
+    background-color: rgb(231, 41, 41);
+    border-bottom-right-radius: 7px ;
 }
 .intellect{
     right:0;
     bottom:0;
     position: absolute;
-    background-image: url(../media/cards/other/intellect.webp);
+    height: 25px;
+    width: 15px;
+    background-color: rgb(43, 202, 237);
+    border-bottom-right-radius: 7px ;
 }
 
 #big_nt_btn{
