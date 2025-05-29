@@ -301,7 +301,9 @@ export class Game {
 
         if (session.players[loserSide].health <= 0) {
             session.condition = 'finished';
-            session.winner    = [winner];
+            //session.winner    = [winner];
+            const winningUsername = session.players[winner].username;
+            session.winner = [winningUsername];
         }
 
         session.discard.push(atk, def);

@@ -77,7 +77,7 @@ socket.on('hpUpdate', ({ attackHP, defenseHP }) => {
 
     const username = localStorage.getItem('username');
     const role = getRole(session, username);
-    
+
     if (!role) {
         console.warn('[WS] Could not determine role in hpUpdate');
         return;
@@ -110,15 +110,46 @@ socket.on('handingCards', ({ round, hands }) => {
 });
 
 //give up
-socket.on('endGame', ({ by }) => {
+// socket.on('endGame', ({ by }) => {
+//     const username = localStorage.getItem('username');
+//     const message = by === username ? 'You lose!' : 'You win!';
+
+//     console.log('[WS] Game ended. Triggered by:', by, '| You are:', username);
+
+//     alert(message);
+//     socket.disconnect();
+//     console.log('Socket connected after disconnect:', socket.connected);
+//     window.location.href = '/';
+// });
+socket.on('endGame', ({ by, winner, reason }) => {
     const username = localStorage.getItem('username');
-    const message = by === username ? 'You lose!' : 'You win!';
+
+    let message = '';
+
+    if (Array.isArray(winner)) {
+        if (winner.length === 0) {
+            message = 'Draw!';
+        } else if (winner.includes(username)) {
+            message = 'You win!';
+        } else {
+            message = 'You lose!';
+        }
+
+        if (reason) {
+            message += `\nReason: ${reason}`;
+        }
+    } else {
+        // Fallback — случай с give up
+        message = by === username ? 'You lose!' : 'You win!';
+    }
 
     console.log('[WS] Game ended. Triggered by:', by, '| You are:', username);
 
     alert(message);
     socket.disconnect();
-    console.log('Socket connected after disconnect:', socket.connected);
+    setTimeout(() => {
+        console.log('[DEBUG] Socket connected after endGame:', socket.connected);
+    }, 10000);
     window.location.href = '/';
 });
 

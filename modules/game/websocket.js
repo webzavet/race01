@@ -262,7 +262,7 @@ export default class WebSocketGateway {
 
                         await this.game.endGame(roomID);
 
-                        await this._emitGameState(roomID);
+                        //await this._emitGameState(roomID);
                         return this.io.socketsLeave(roomID);
                     }
 
