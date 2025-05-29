@@ -77,5 +77,11 @@ battle.addEventListener('drop', () => {
     dropOK = true;
     hasPlayedCard = true;
 
+    dragged.draggable = false;
+
     socket.emit(role === 'attack' ? 'playCardAttack' : 'playCardDefense', { cardId });
 });
+
+export function resetCardPlayFlag() {
+    hasPlayedCard = false;
+}

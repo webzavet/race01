@@ -1,4 +1,4 @@
-// state.js
+// // state.js
 let gameState = null;
 
 export function updateGameState(newState) {
@@ -7,4 +7,8 @@ export function updateGameState(newState) {
 
 export function getGameState() {
     return gameState;
+}
+
+export function getRole(session, username) {
+    return session.players.attack.username === username ? 'attack' : 'defense';
 }

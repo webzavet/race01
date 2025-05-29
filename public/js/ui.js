@@ -20,6 +20,24 @@ export function renderMyHand(cards) {
     });
 }
 
+export function renderEnemyPlayedCard(card) {
+    const container = document.querySelector('.enemy_play_cards');
+    container.innerHTML = ''; 
+
+    const div = document.createElement('div');
+    div.classList.add('card_with_stats');
+    div.dataset.id = card.id;
+
+    div.innerHTML = `
+        <img src="/${card.icon}" draggable="false">
+        <span class="hp">${card.defence}</span>
+        <span class="cost">${card.cost}</span>
+        <span class="dmg">${card.attack}</span>
+    `;
+
+    container.appendChild(div);
+}
+
 export function updateHP(session) {
     const username = localStorage.getItem('username');
     const role = session.players.attack.username === username ? 'attack' : 'defense';
@@ -40,4 +58,12 @@ export function updateArrow(session, username) {
     } else {
         arrow.style.transform = 'rotate(90deg)';
     }
+}
+
+export function updateElixir(session) {
+    const username = localStorage.getItem('username');
+    const role = session.players.attack.username === username ? 'attack' : 'defense';
+    const elixir = session.players[role].elixir;
+
+    document.getElementById('player_mana').textContent = elixir;
 }
