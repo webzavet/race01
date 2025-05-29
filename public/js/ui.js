@@ -13,6 +13,7 @@ export function renderMyHand(cards) {
                 <span class="hp">${card.defence}</span>
                 <span class="cost">${card.cost}</span>
                 <span class="dmg">${card.attack}</span>
+                <span class="${card.attribute}"></span>
             </div>
         `;
 

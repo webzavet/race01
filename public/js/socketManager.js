@@ -38,7 +38,7 @@ socket.on('gameState', (session) => {
         return;
     }
 
-    console.log('[WS] gameState received for role:', role, session);
+    //console.log('[WS] gameState received for role:', role, session);
 
     // Update interface: hand, HP, elixir, arrow
     renderMyHand(session.players[role].hand);
@@ -56,7 +56,7 @@ socket.on('gameState', (session) => {
 });
 
 socket.on('cardPlayed', ({ side, card }) => {
-    console.log(`[WS] ${side} played card:`, card);
+    //console.log(`[WS] ${side} played card:`, card);
 
     const username = localStorage.getItem('username');
     const session = getGameState();
@@ -69,7 +69,7 @@ socket.on('cardPlayed', ({ side, card }) => {
 
 // battle
 socket.on('battleResult', ({ diff }) => {
-    console.log(`[WS] Battle result: ${diff}`);
+    //console.log(`[WS] Battle result: ${diff}`);
 
     document.querySelector('.player_battle').innerHTML = '';
     document.querySelector('.enemy_play_cards').innerHTML = '';
@@ -91,7 +91,7 @@ socket.on('hpUpdate', ({ attackHP, defenseHP }) => {
         return;
     }
 
-    console.log('[WS] hpUpdate:', { attackHP, defenseHP, role });
+    //console.log('[WS] hpUpdate:', { attackHP, defenseHP, role });
 
     document.getElementById('player_hp').textContent =
         role === 'attack' ? attackHP : defenseHP;
@@ -101,7 +101,7 @@ socket.on('hpUpdate', ({ attackHP, defenseHP }) => {
 
 // new round
 socket.on('handingCards', ({ round, hands }) => {
-    console.log(`[WS] Round ${round} begins`);
+    //console.log(`[WS] Round ${round} begins`);
     const username = localStorage.getItem('username');
 
     const session = getGameState();
@@ -155,9 +155,6 @@ socket.on('endGame', ({ by, winner, reason }) => {
 
     alert(message);
     socket.disconnect();
-    setTimeout(() => {
-        console.log('[DEBUG] Socket connected after endGame:', socket.connected);
-    }, 10000);
     window.location.href = '/';
 });
 
