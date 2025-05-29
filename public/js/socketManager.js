@@ -45,6 +45,14 @@ socket.on('gameState', (session) => {
     updateHP(session);
     updateElixir(session);
     updateArrow(session, username);
+
+    // update nicknames
+    const enemyRole = role === 'attack' ? 'defense' : 'attack';
+    const myNicknameElement = document.getElementById('nickname');
+    const enemyNicknameElement = document.getElementById('enemy_nickname');
+
+    if (myNicknameElement) myNicknameElement.textContent = session.players[role].username;
+    if (enemyNicknameElement) enemyNicknameElement.textContent = session.players[enemyRole].username;
 });
 
 socket.on('cardPlayed', ({ side, card }) => {
